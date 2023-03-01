@@ -1,6 +1,5 @@
 import logging
 import platform
-import os
 
 
 class HostnameFilter(logging.Filter):

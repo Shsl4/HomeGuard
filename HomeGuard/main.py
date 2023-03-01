@@ -1,21 +1,27 @@
-import logging
 import os
-from log import filters
-
-
-home_directory = os.path.expanduser('~/HomeGuard.log')
-handler = logging.StreamHandler()
-file_handler = logging.FileHandler(home_directory)
-handler.addFilter(filters.HostnameFilter())
-fmt = logging.Formatter('%(asctime)s %(hostname)s %(processName)s[%(process)s]: %(message)s', datefmt='%b %d %H:%M:%S')
-
-handler.setFormatter(fmt)
-file_handler.setFormatter(fmt)
-
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-logger.addHandler(handler)
-logger.addHandler(file_handler)
+import socket
+from log.logger import Logger
+from scapy.layers.l2 import Ether, ARP
+from scapy.all import srp, conf
+from utils.mac_database import MacDatabase
 
 if __name__ == "__main__":
-    logger.info("Starting HomeGuard...")
+
+    conf.verb = 0
+
+    logger = Logger(os.path.expanduser('~/HomeGuard.log'))
+    logger.log("Starting HomeGuard...")
+    db = MacDatabase()
+
+    gateway = conf.route.route("0.0.0.0")[2]
+    ans, _ = srp(Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=gateway+'/24'), timeout=2)
+
+    for snd, rcv in ans:
+        ip = rcv.sprintf(r"%ARP.psrc%")
+        mac = rcv.sprintf(r"%Ether.src%")
+        name, _ = socket.getnameinfo((ip, 0), 0)
+        if name == ip:
+            logger.log(f'{ip} -> {mac} ({db.get(mac)})')
+        else:
+            logger.log(f'{ip} -> {name} ({mac}, {db.get(mac)})')
+
