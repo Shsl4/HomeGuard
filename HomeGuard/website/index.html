@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset = "UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>HomeGuard - Admin Page</title> 
+    
+    <link rel="stylesheet" type="text/css" href="css/index_admin.css"/>
+    <link rel="stylesheet" type="text/css" href="css/dashboard.css"/>
+
+    <script src="js/retract_dashboard.js" defer></script>
+
+
+
+</head>
+
+<body>
+    <!-- Section Dashboard. -->
+
+    <section class="dashboard" id="dashboard">
+        <div class="max-width">
+            <div class="dashboard-square" data-visible = 'true'>
+
+                <!-- Top Dashboard. -->
+                <div class="dashboard-top-title">
+                    <img src="ressources/logos/logo_test.png" class="logo-dashboard">
+                    <h3 class="main-title-dashboard retract">HomeGuard&nbsp;</h3>
+                    <h3 class="second-title-dashboard retract">Dashboard</h3>
+
+                    <!-- Button to retract the Dashboard. -->
+                    <button class="retract-button" onclick="toggle_retract()">
+                        <img src="ressources/icons/left_arrow.png" class="left-arrow-icon">
+                    </button>
+                </div>
+
+                <div class="line retract"></div>
+
+                <!-- Menu Dashboard. -->
+
+                <div class="square-menu">
+                    <h4 class="title-menu retract">MENU</h4>
+                </div>
+                <div class="dashboard-menu">
+                    <div class="list-menu">
+                        <!-- Dashboard Button Menu. -->
+
+                        <button class="menu-dashboard button-decoration">
+                            <div class="square-icon">
+                                <img src="ressources/icons/dashboard_icon.png" class="dashboard-icon icon">
+                            </div>
+                            <div class="square-text-button">
+                                <h4 class="retract" >Dashboard</h4>
+                            </div>
+                        </button>
+
+                        <!-- Alert Button Menu. -->
+
+                        <button class="menu-dashboard button-decoration">
+                            <div class="square-icon">
+                                <img src="ressources/icons/alert_icon.png" class="alert-icon icon">
+                            </div>
+                            <div class="square-text-button">
+                                <h4 class="retract" >Alert</h4>
+                            </div>
+                        </button>
+
+                        <!-- Database PhpMyAdmin Button Menu. -->
+                        
+                        <button class="menu-dashboard button-decoration">
+                            <div class="square-icon">
+                                <img src="ressources/icons/database_icon.png" class="database-icon icon ">
+                            </div>
+                            <div class="square-text-button">
+                                <h4 class="retract">phpMyAdmin</h4>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="admin" id="admin">
+        <div class="square-dashboard">
+
+            <!-- Statistic Square (Homeguard and more...) -->
+            <div class="square-statistic">
+                <div class="statistic">
+                        <div class="top-statistic">
+                            <div class="icon-statistic">
+                            <img src="ressources/icons/wifi_icon.png">
+                        </div>
+                        <div class="title-statistic">
+                            <h4>HOMEGUARD</h4>
+                        </div>
+                    </div>
+                    <div class="container-line">
+                        <div class="line-2"></div>
+                    </div>
+
+                    <div class="square-status">
+                        <p class="status">Status:</p>
+                        <p class="true-false-status">Good</p>
+                    </div>
+                </div>
+                <div class="statistic">
+                    <div class="top-statistic">
+                        <div class="icon-statistic">
+                        <img src="ressources/icons/wifi_icon.png">
+                    </div>
+                    <div class="title-statistic">
+                        <h4>HOMEGUARD</h4>
+                    </div>
+                </div>
+                <div class="container-line">
+                    <div class="line-2"></div>
+                </div>
+
+                <div class="square-status">
+                    <p class="status">Status:</p>
+                    <p class="true-false-status">Good</p>
+                </div>
+                </div>
+                <div class="statistic">
+                    <div class="top-statistic">
+                        <div class="icon-statistic">
+                        <img src="ressources/icons/wifi_icon.png">
+                    </div>
+                    <div class="title-statistic">
+                        <h4>HOMEGUARD</h4>
+                    </div>
+                </div>
+                <div class="container-line">
+                    <div class="line-2"></div>
+                </div>
+
+                <div class="square-status">
+                    <p class="status">Status:</p>
+                    <p class="true-false-status">Good</p>
+                </div>
+                </div>
+            </div>
+            <div class="container-device">
+                <div class="square-device">
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+</body>

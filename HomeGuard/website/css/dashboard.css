@@ -1,0 +1,189 @@
+.dashboard {
+    transform: translateX(0);
+    transition: transform 0.5s ease-in-out;
+
+    width: 17%;
+    height: 920px;
+
+    background-color: #1a1c1d;
+    border-bottom-right-radius: 30px;
+
+    display: block;
+}
+
+
+
+.dashboard .max-width{
+    margin: auto;
+}
+
+.dashboard .dashboard-square{
+    width: 100%;
+    margin: 20px;
+    align-items: center;
+    justify-content: center;
+    display: block;
+}
+
+.dashboard .dashboard-square .dashboard-top-title{
+    position: relative;
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-right: 25px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* Design Dashboard Top. */
+
+.dashboard .dashboard-square .dashboard-top-title .logo-dashboard{
+    width: 45px;
+    height: 45px;
+
+    margin-right: 5%;
+}
+
+.dashboard .dashboard-square .dashboard-top-title .main-title-dashboard{
+    color: white;
+    font-weight: 600;
+}
+
+.dashboard .dashboard-square .dashboard-top-title .second-title-dashboard{
+    font-size: 16px;
+    color: #494949;
+}
+
+/* Design button retract. */
+
+
+.dashboard .dashboard-square .dashboard-top-title .retract-button{
+    position: absolute;
+
+
+    width: 30px;
+    height: 30px;
+
+    background-color: white;
+    border-radius: 50%;
+    border: none;
+
+
+    right: -20px;
+
+    cursor: pointer;
+}
+
+
+.dashboard .dashboard-square .dashboard-top-title .retract-button .left-arrow-icon{
+    width: 15px;
+    height: 15px;
+    margin-top: 5px;
+    
+    
+}
+/* Design Dashboard General. */
+
+.line{
+    border: 1px solid #2e2d2d;
+    width: 90%;
+}
+
+/* Property of every icons in the dashboard. */
+
+.icon{
+    margin-right: 20px;
+}
+
+/* Property of every text in the dashboard. */
+
+h4{
+    color: #E2E2E2;
+    font-size: 18px;
+}
+
+.button-decoration{
+    cursor: pointer;
+    background : none;
+    border: none;
+    box-shadow: none;
+
+    width: 100%;
+}
+
+.square-icon{
+    width: 15%;
+}
+
+.square-text-button{
+    width: 35%;
+}
+
+/* Design Dashboard Menu. */
+
+
+.dashboard .dashboard-square .square-menu .title-menu{
+    font-size: 17px;
+    color: rgb(82, 75, 75);
+}
+
+.dashboard .dashboard-square .dashboard-menu{
+    height: 150px;
+
+    margin-right: 40px;
+}
+
+.dashboard .dashboard-square .dashboard-menu .list-menu{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.dashboard .dashboard-square .dashboard-menu .menu-dashboard {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+}
+
+.dashboard .dashboard-square .dashboard-menu .menu-dashboard .dashboard-icon{
+    width: 24px;
+    height: 24px;
+}
+
+.dashboard .dashboard-square .dashboard-menu .menu-dashboard .alert-icon{
+    width: 20px;
+    height: 20px;
+}
+
+.dashboard .dashboard-square .dashboard-menu .menu-dashboard .database-icon{
+    width: 24px;
+    height: 24px;
+}
+
+
+
+/* Hidden Dashboard Property. */
+
+.dashboard .dashboard-square.hidden{
+
+}
+
+.dashboard.hidden{
+    width: 4%;
+
+    transform: translateX(-20%);
+}
+
+.display{
+    display: none;
+    
+}
+
+.icon-retract{
+    margin-top: 35px;
+}
+/* Responsive Dashboard Property.*/

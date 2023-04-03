@@ -1,0 +1,146 @@
+/* Admin Page Styling. */
+
+*{
+    font-family: 'Roboto', sans-serif;
+}
+
+
+body{
+    display: flex;
+    background-color: #E2E2E2;
+
+    margin: 0 auto; 
+}
+
+.max-width{
+    max-width: 1920px;
+    margin: auto;
+}
+
+.admin{
+    width: 83%;
+    height: 920px;
+}
+
+
+.admin .square-dashboard{
+    width: 100%;
+
+    display: block;
+    
+
+}
+
+/* General Property. */
+
+.container-line{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-top: 15px;
+
+}
+
+.line-2{
+    border: 1px solid #2e2d2d;
+
+
+    width: 280px;
+}
+
+/* Design of the statistic Square. */
+
+.admin .square-dashboard .square-statistic{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    margin-top: 75px;
+}
+
+.admin .square-dashboard .square-statistic .statistic{
+    width: 17%;
+    height: 190px;
+
+    display: block;
+
+
+    background-color: white;
+    border-radius: 20px;
+    box-shadow: 1px;
+
+    padding: 20px;
+
+}
+
+.admin .square-dashboard .square-statistic .statistic .top-statistic{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: space-around;
+
+    
+}
+
+.admin .square-dashboard .square-statistic .statistic .top-statistic .icon-statistic {
+    background-color: #0085FF;
+    border-radius: 10px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 50px;
+    height: 45px;
+}
+
+.admin .square-dashboard .square-statistic .statistic .top-statistic .icon-statistic img{
+    width: 27px;
+    height: 27px;
+}
+
+.admin .square-dashboard .square-statistic .statistic .top-statistic .title-statistic h4{
+    color: #494949;
+
+    font-size: 18px;
+}
+
+.admin .square-dashboard .square-statistic .statistic .square-status{
+    margin-top: 35px;
+    display: flex;
+    
+}
+
+.admin .square-dashboard .square-statistic .statistic .square-status p{
+    margin-left: 15px;
+
+    font-size: 15px;
+
+}
+
+.admin .square-dashboard .square-statistic .statistic .square-status .true-false-status{
+    color: #40C95E;
+}
+
+
+/* Device Design. */
+
+
+.admin .square-dashboard .container-device{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+}
+
+.admin .square-dashboard .container-device .square-device{
+    background-color: white;
+
+    border-radius: 20px;
+
+    margin-top: 160px;
+    width: 87%;
+    height: 400px;
+}
