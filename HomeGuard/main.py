@@ -1,11 +1,9 @@
-import os
-
 import netifaces
 from netaddr import IPNetwork
 from scapy.all import *
 from scapy.all import srp, conf
 from scapy.layers.dhcp import DHCP
-from scapy.layers.dns import DNS
+from scapy.layers.dns import DNS, DNSRR, DNSTextField
 from scapy.layers.inet import IP
 from scapy.layers.l2 import Ether, ARP
 
@@ -49,12 +47,38 @@ class MySession(DefaultSession):
         return ''
 
     @staticmethod
-    def dns_is_local(pkt: DNS):
-        if pkt.qdcount > 0:
-            qname = pkt.qd.qname.decode('utf-8')
-            return qname[-7:] == '.local.'
-        return False
+    def __proc_find_name(count, elem) -> str:
+        if count > 0:
+            for x in range(0, count):
+                idx = elem[x].rrname.find(b'._device-info')
+                if idx >= 0:
+                    return elem[x].rrname[:idx].decode('utf-8')
+        return None
 
+    @staticmethod
+    def dns_get_device_name(pkt: DNS) -> str:
+
+        procs = [(pkt.arcount, pkt.ar), (pkt.ancount, pkt.an), (pkt.nscount, pkt.ns)]
+
+        for proc in procs:
+            result = MySession.__proc_find_name(proc[0], proc[1])
+            if result is not None:
+                return result
+
+        if pkt.qdcount > 0:
+            for x in range(0, pkt.qdcount):
+                idx = pkt.qd[x].qname.find(b'._device-info')
+                if idx >= 0:
+                    return pkt.qd[x].qname[:idx].decode('utf-8')
+
+        return None
+
+    @staticmethod
+    def expand(x):
+        yield x
+        while x.payload:
+            x = x.payload
+            yield x
     def handle_packet(self, pkt: Packet):
 
         if DHCP in pkt:
@@ -64,8 +88,10 @@ class MySession(DefaultSession):
 
         if DNS in pkt:
             dns_packet: DNS = pkt[DNS]
-            if MySession.dns_is_local(dns_packet):
-                print(dns_packet.qd.qname.decode('utf-8'))
+            dev_name = MySession.dns_get_device_name(dns_packet)
+            if dev_name is not None:
+                print(f'Registered device activity: {dev_name}')
+
 
         if IP in pkt:
             source = pkt[IP].src
@@ -74,11 +100,11 @@ class MySession(DefaultSession):
             dest_mac = pkt[Ether].dst
             gateway: str = conf.route.route("0.0.0.0")[1]
             sub = gateway[:gateway.rindex('.')]
-            if self.addresses.count(source) == 0 and str(source).startswith(sub):
-                logger.log(f'New address: {source} ({db.get(source_mac)}: {source_mac})')
+            if self.addresses.count(source) == 0:
+                logger.log(f'New activity detected: {source} ({db.get(source_mac)}: {source_mac})')
                 self.addresses.append(source)
-            if self.addresses.count(dest) == 0 and str(dest).startswith(sub):
-                logger.log(f'New address: {dest} ({db.get(dest_mac)}: {dest_mac})')
+            if self.addresses.count(dest) == 0:
+                logger.log(f'New activity detected: {dest} ({db.get(dest_mac)}: {dest_mac})')
                 self.addresses.append(dest)
 
 
@@ -89,22 +115,28 @@ def multicast_arp():
     my_ip: str = route[1]
     gateway: str = route[2]
     data = netifaces.ifaddresses(adapter)
-    mask = data[2][0]['netmask']
+    mask = data[netifaces.AF_INET][0]['netmask']
     net = IPNetwork(f'{gateway}/{mask}')
-    ping_dst = str(net.cidr)
+    ping_dst = net.cidr
+    logger.log(f'Starting arp scan on {ping_dst}')
 
-    logger.log(f'Starting multicast arp scan on {ping_dst}.')
+    for addr in net.iter_hosts():
+        ans, _ = srp(Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=str(addr)), timeout=0.1)
 
-    ans, _ = srp(Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=ping_dst), timeout=5)
+        if len(ans) == 0:
+            print(f'{addr} -> No response\r', end='')
+            continue
 
-    for snd, rcv in ans:
-        ip = rcv.sprintf(r"%ARP.psrc%")
-        mac = rcv.sprintf(r"%Ether.src%")
-        hostname, _ = socket.getnameinfo((ip, 0), 0)
-        if hostname == ip:
-            logger.log(f'{ip} -> {mac} ({db.get(mac)})')
-        else:
-            logger.log(f'{ip} -> {hostname} ({mac}, {db.get(mac)})')
+        for snd, rcv in ans:
+            ip = rcv.sprintf(r"%ARP.psrc%")
+            mac = rcv.sprintf(r"%Ether.src%")
+            hostname, _ = socket.getnameinfo((ip, 0), 0)
+            if hostname == ip:
+                print(f'{ip} -> {mac} ({db.get(mac)})')
+            else:
+                print(f'{ip} -> {hostname} ({mac}, {db.get(mac)})')
+
+
 
 
 if __name__ == "__main__":
