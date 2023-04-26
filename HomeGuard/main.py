@@ -73,12 +73,6 @@ class MySession(DefaultSession):
 
         return None
 
-    @staticmethod
-    def expand(x):
-        yield x
-        while x.payload:
-            x = x.payload
-            yield x
     def handle_packet(self, pkt: Packet):
 
         if DHCP in pkt:
@@ -98,14 +92,21 @@ class MySession(DefaultSession):
             source_mac = pkt[Ether].src
             dest = pkt[IP].dst
             dest_mac = pkt[Ether].dst
+
             gateway: str = conf.route.route("0.0.0.0")[1]
-            sub = gateway[:gateway.rindex('.')]
-            if self.addresses.count(source) == 0:
-                logger.log(f'New activity detected: {source} ({db.get(source_mac)}: {source_mac})')
-                self.addresses.append(source)
-            if self.addresses.count(dest) == 0:
-                logger.log(f'New activity detected: {dest} ({db.get(dest_mac)}: {dest_mac})')
-                self.addresses.append(dest)
+            gtw = gateway[:gateway.rindex('.')]
+            src = source[:source.rindex('.')]
+            dst = dest[:dest.rindex('.')]
+
+            if src == gtw:
+               if self.addresses.count(source) == 0:
+                    logger.log(f'New activity detected: {source} ({db.get(source_mac)}: {source_mac})')
+                    self.addresses.append(source)
+
+            if dst == gtw:
+               if self.addresses.count(dest) == 0:
+                    logger.log(f'New activity detected: {dest} ({db.get(dest_mac)}: {dest_mac})')
+                    self.addresses.append(dest)
 
 
 def multicast_arp():
@@ -144,6 +145,6 @@ if __name__ == "__main__":
 
     logger.log("Starting HomeGuard...")
 
-    # multicast_arp()
+    multicast_arp()
 
     sniff = sniff(session=MySession, store=False)
