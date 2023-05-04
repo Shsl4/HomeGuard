@@ -1,14 +1,16 @@
 from scapy.all import *
-from scapy.layers.dhcp import DHCP
+from scapy.layers.dhcp import DHCP, DHCPOptionsField
 from scapy.layers.dns import DNS
 from scapy.layers.inet import IP
 from scapy.layers.l2 import Ether, ARP
+
 from HomeGuard.data.identity import IdentityManager
 from HomeGuard.log.logger import Logger
 from HomeGuard.net.adapter import Adapter
+from HomeGuard.utils.singleton import Singleton
 
 
-class Session(DefaultSession):
+class Session(DefaultSession, metaclass=Singleton):
 
     def __init__(self, prn=None, store=False, supersession=None, *args, **kwargs):
         super().__init__(prn, store, supersession, *args, **kwargs)
@@ -74,8 +76,8 @@ class Session(DefaultSession):
             arp_pkt: ARP = pkt[ARP]
             source = arp_pkt.psrc
             dest = arp_pkt.pdst
-            self.id_manager.identity(source_mac, source)
-            self.id_manager.identity(dest_mac, dest)
+            self.id_manager.identity(None, source, source_mac)
+            self.id_manager.identity(None, dest, dest_mac)
 
         if IP in pkt:
 
@@ -86,16 +88,16 @@ class Session(DefaultSession):
                 dhcp_packet: DHCP = pkt[DHCP]
                 if Session.dhcp_is_request(dhcp_packet):
                     device_name = Session.dhcp_get_hostname(dhcp_packet)
-                    self.id_manager.identity_with_name(device_name, source_mac, source)
+                    self.id_manager.identity(device_name, source, source_mac)
 
             if DNS in pkt:
                 dns_packet: DNS = pkt[DNS]
                 dev_name = Session.dns_get_device_name(dns_packet)
                 if dev_name is not None:
-                    self.id_manager.identity_with_name(dev_name, source_mac, source)
+                    self.id_manager.identity(dev_name, source, source_mac)
 
             if Adapter.is_same_subnet(source):
-                self.id_manager.identity(source_mac, source)
+                self.id_manager.identity(None, source, source_mac)
 
             if Adapter.is_same_subnet(dest):
-                self.id_manager.identity(dest_mac, dest)
+                self.id_manager.identity(None, dest, dest_mac)

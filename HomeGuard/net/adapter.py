@@ -1,16 +1,27 @@
+import os
 import socket
-from HomeGuard.utils.mac_database import MacDatabase
-from HomeGuard.log.logger import Logger
-from netifaces import AF_INET, AF_LINK, ifaddresses
+
 from netaddr import IPNetwork
-from scapy.all import conf, srp
+from netifaces import AF_INET, AF_LINK, ifaddresses
+from scapy.all import conf, srp, sr1
 from scapy.layers.l2 import Ether, ARP
+from scapy.layers.inet import IP, UDP
+from scapy.layers.netbios import NBNSHeader, NBNSNodeStatusRequest
+from HomeGuard.log.logger import Logger
+from HomeGuard.utils.mac_database import MacDatabase
+
 
 class Adapter:
 
     @staticmethod
     def main_adapter():
-        return conf.route.route("0.0.0.0")[0]
+
+        adapter = conf.route.route("0.0.0.0")[0]
+
+        if os.name == 'nt':
+            return adapter[adapter.index('{'): adapter.index('}') + 1]
+
+        return adapter
 
     @staticmethod
     def get_ip():
@@ -49,22 +60,19 @@ class Adapter:
     @staticmethod
     def arp_scan(target, timeout=1.0):
 
-        if not Adapter.is_same_subnet(target):
-            Logger.log('Trying to scan adresses on a different subnet. No response can be obtained.')
-            return
-
-        Logger.log(f'Starting arp scan on {target}')
-
         ans, _ = srp(Ether(dst='ff:ff:ff:ff:ff:ff') / ARP(pdst=target), timeout=timeout)
 
-        if len(ans) == 0:
-            Logger.log('No response obtained.')
+        result = []
 
-        for snd, rcv in ans:
-            ip = rcv.sprintf(r"%ARP.psrc%")
-            mac = rcv.sprintf(r"%Ether.src%")
-            hostname, _ = socket.getnameinfo((ip, 0), 0)
-            if hostname == ip:
-                Logger.log(f'{ip} -> {mac} ({MacDatabase.get(mac)})')
-            else:
-                Logger.log(f'{ip} -> {hostname} ({mac}, {MacDatabase.get(mac)})')
+        for _, pkt in ans:
+            result.append((pkt[ARP].psrc, Adapter.netbios_name(pkt[ARP].psrc), pkt[Ether].src))
+
+        return result
+
+    @staticmethod
+    def netbios_name(ip, port=137):
+        return socket.getnameinfo((ip, port), 0)[0]
+
+    @staticmethod
+    def validate_mac(mac):
+        return mac != 'ff:ff:ff:ff:ff:ff' and mac != '00:00:00:00:00:00'
