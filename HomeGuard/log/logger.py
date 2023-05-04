@@ -1,24 +1,34 @@
 import logging
-from . import filters
+import os
+from HomeGuard.log.filters import HostnameFilter
+from HomeGuard.utils.singleton import Singleton
+
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
-class Logger:
+class Logger(metaclass=Singleton):
 
-    def __init__(self, file_path):
-        console_handler = logging.StreamHandler()
-        file_handler = logging.FileHandler(file_path, mode='w')
+    def __init__(self):
+        self.logger = logging.getLogger('HomeGuard')
 
-        console_handler.addFilter(filters.HostnameFilter())
+        if len(self.logger.handlers) == 0:
+            console_handler = logging.StreamHandler()
+            file_handler = logging.FileHandler(os.path.expanduser('~/HomeGuard.log'), mode='w')
 
-        fmt = logging.Formatter('%(asctime)s %(hostname)s %(processName)s[%(process)s]: %(message)s',
-                                datefmt='%b %d %H:%M:%S')
+            console_handler.addFilter(HostnameFilter())
 
-        file_handler.setFormatter(fmt)
+            fmt = logging.Formatter('%(asctime)s %(hostname)s %(processName)s[%(process)s]: %(message)s',
+                                    datefmt='%b %d %H:%M:%S')
 
-        self.logger = logging.getLogger()
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(console_handler)
-        self.logger.addHandler(file_handler)
+            file_handler.setFormatter(fmt)
 
-    def log(self, m):
-        self.logger.info(m)
+            self.logger.setLevel(logging.DEBUG)
+            self.logger.addHandler(console_handler)
+            self.logger.addHandler(file_handler)
+
+    @staticmethod
+    def instance():
+        return Logger()
+
+    @staticmethod
+    def log(m):
+        Logger.instance().logger.info(m)
