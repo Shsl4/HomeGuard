@@ -66,6 +66,10 @@ class Engine:
         while True:
 
             inp = input()
+
+            if not inp:
+                continue
+
             args = inp.split(' ')
             command = args[0] if len(args) > 0 else 'None'
 
@@ -107,7 +111,7 @@ class Engine:
                     print(Adapter.netbios_name(args[1], int(args[2])))
 
             else:
-                print(f'Unrecognized command: {command}.')
+                print(f'Unrecognized command: {command}')
 
     def try_start_discord_bot(self):
 
