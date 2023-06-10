@@ -1,11 +1,21 @@
 import logging
 import os
+import threading
+
 from HomeGuard.log.filters import HostnameFilter
-from HomeGuard.utils.singleton import Singleton
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 
-class Logger(metaclass=Singleton):
+class Logger():
+
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
         self.logger = logging.getLogger('HomeGuard')

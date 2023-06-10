@@ -1,7 +1,10 @@
-import dataclasses, json, uuid
-from time import time
-from uuid import UUID
+import dataclasses
+import json
+import time
+import uuid
 from dataclasses import dataclass, field
+from uuid import UUID
+
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.utils.mac_database import MacDatabase
 
@@ -13,10 +16,10 @@ class DeviceIdentity:
     display_name: str = ''
     ip_addresses: set[str] = field(default_factory=set[str])
     recognized_names: set[str] = field(default_factory=set[str])
-    last_activity: time = time()
+    last_activity: time.time = time.time()
 
     def touch(self):
-        self.last_activity = time()
+        self.last_activity = time.time()
 
     def try_assign_netbios_name(self):
 
@@ -85,6 +88,7 @@ class IdentityManager:
         for identity in self._identities:
 
             print(f'Display name: {identity.display_name}')
+            print(f'UUID: {identity.uuid}')
             print(f'MAC: {identity.mac_address}')
             print(f'IPs: {identity.ip_addresses}')
 
@@ -125,4 +129,3 @@ class IdentityManager:
         for identity in self._identities:
             if mac == identity.mac_address:
                 return identity.refresh(name, ip, mac)
-

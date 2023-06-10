@@ -1,22 +1,35 @@
+import threading
+
 from scapy.all import *
 from scapy.layers.dhcp import DHCP, DHCPOptionsField
 from scapy.layers.dns import DNS
 from scapy.layers.inet import IP
 from scapy.layers.l2 import Ether, ARP
 
+from HomeGuard.data.event import TimeWindow, Event
 from HomeGuard.data.identity import IdentityManager
 from HomeGuard.log.logger import Logger
 from HomeGuard.net.adapter import Adapter
-from HomeGuard.utils.singleton import Singleton
 
 
-class Session(DefaultSession, metaclass=Singleton):
+class Session(DefaultSession):
 
-    def __init__(self, prn=None, store=False, supersession=None, *args, **kwargs):
+    _instance = None
+    _lock = threading.Lock()
+
+    def __new__(cls, *args, **kwargs):
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self, engine, prn=None, store=False, supersession=None, *args, **kwargs):
+
         super().__init__(prn, store, supersession, *args, **kwargs)
+        self.engine = engine
         self.__count = 0
         self.addresses = []
-        self.id_manager = IdentityManager()
+
         Logger.log('Started sniff session.')
 
     def on_packet_received(self, pkt):
@@ -76,8 +89,8 @@ class Session(DefaultSession, metaclass=Singleton):
             arp_pkt: ARP = pkt[ARP]
             source = arp_pkt.psrc
             dest = arp_pkt.pdst
-            self.id_manager.identity(None, source, source_mac)
-            self.id_manager.identity(None, dest, dest_mac)
+            self.engine.notify(None, source, source_mac)
+            self.engine.notify(None, dest, dest_mac)
 
         if IP in pkt:
 
@@ -88,16 +101,16 @@ class Session(DefaultSession, metaclass=Singleton):
                 dhcp_packet: DHCP = pkt[DHCP]
                 if Session.dhcp_is_request(dhcp_packet):
                     device_name = Session.dhcp_get_hostname(dhcp_packet)
-                    self.id_manager.identity(device_name, source, source_mac)
+                    self.engine.notify(device_name, source, source_mac)
 
             if DNS in pkt:
                 dns_packet: DNS = pkt[DNS]
                 dev_name = Session.dns_get_device_name(dns_packet)
                 if dev_name is not None:
-                    self.id_manager.identity(dev_name, source, source_mac)
+                    self.engine.notify(dev_name, source, source_mac)
 
             if Adapter.is_same_subnet(source):
-                self.id_manager.identity(None, source, source_mac)
+                self.engine.notify(None, source, source_mac)
 
             if Adapter.is_same_subnet(dest):
-                self.id_manager.identity(None, dest, dest_mac)
+                self.engine.notify(None, dest, dest_mac)
