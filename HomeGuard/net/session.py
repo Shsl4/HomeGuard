@@ -5,6 +5,7 @@ from scapy.layers.dhcp import DHCP, DHCPOptionsField
 from scapy.layers.dns import DNS
 from scapy.layers.inet import IP
 from scapy.layers.l2 import Ether, ARP
+from scapy.layers.netbios import NBNSQueryResponse, NBNSQueryRequest
 
 from HomeGuard.data.event import TimeWindow, Event
 from HomeGuard.data.identity import IdentityManager
@@ -108,6 +109,10 @@ class Session(DefaultSession):
                 dev_name = Session.dns_get_device_name(dns_packet)
                 if dev_name is not None:
                     self.engine.notify(dev_name, source, source_mac)
+
+            if NBNSQueryResponse in pkt:
+                response: NBNSQueryResponse = pkt[NBNSQueryResponse]
+                print(response.name)
 
             if Adapter.is_same_subnet(source):
                 self.engine.notify(None, source, source_mac)

@@ -1,5 +1,7 @@
 import datetime
+import json
 import uuid
+from json import JSONEncoder
 
 
 class TimeWindow:
@@ -26,16 +28,24 @@ class Event:
 
     def __init__(self, name: str):
         self.__name = name
-        self.__ids: set[uuid] = set()
+        self.__ids: set[uuid.UUID] = set()
         self.__triggers: list[EventTrigger] = []
 
         # Represents the devices that triggered this event today.
-        self.__triggered_devices: set[uuid] = set()
+        self.__triggered_devices: set[uuid.UUID] = set()
+
+
+    def to_json(self):
+        return {
+            'name': self.__name,
+            'ids': self.__ids,
+            'triggers': self.__triggers,
+        }
 
     def reset(self):
         self.__triggered_devices.clear()
 
-    def trigger(self, device_id: uuid):
+    def trigger(self, device_id: uuid.UUID):
 
         if device_id not in self.__ids:
             return None
@@ -73,8 +83,14 @@ class EventTrigger:
         self.__months: set[int] = set()
         self.__days: set[int] = set()
         self.__time_window: TimeWindow = TimeWindow.all_day()
-        self.__unique: bool = False
         self.__event = event
+
+    def to_json(self):
+        return {
+            'months': self.__months,
+            'days': self.__days,
+            'time_window': self.__time_window,
+        }
 
     def should_trigger(self, month: int, day: int, current_time: float):
         return month in self.__months and day in self.__days and self.__time_window.included(current_time)
@@ -96,17 +112,28 @@ class EventTrigger:
     def update_time_window(self, window: TimeWindow):
         self.__time_window = window
 
-    def set_unique(self, value: bool):
-        self.__unique = value
-
-    def unique(self) -> bool:
-        return self.__unique
-
     def event(self) -> Event:
         return self.__event
 
     def time_window(self) -> TimeWindow:
         return self.__time_window
+
+
+class EventEncoder(json.JSONEncoder):
+    def default(self, obj):
+
+        if isinstance(obj, uuid.UUID):
+            return str(obj)
+        if isinstance(obj, set):
+            return list(obj)
+        if isinstance(obj, TimeWindow):
+            return obj.__dict__
+        if isinstance(obj, Event):
+            return obj.to_json()
+        if isinstance(obj, EventTrigger):
+            return obj.to_json()
+
+        return json.JSONEncoder.default(self, obj)
 
 
 class EventManager:
@@ -138,3 +165,12 @@ class EventManager:
                 return trigger
 
         return None
+
+
+    def write_events(self):
+
+        json_object = json.dumps(self.__events, cls=EventEncoder,
+                                 indent=2, ensure_ascii=False).encode('utf-8')
+
+        with open("events.json", "w") as outfile:
+            outfile.write(json_object.decode())

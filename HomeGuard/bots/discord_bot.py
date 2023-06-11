@@ -1,12 +1,11 @@
 import datetime
-import uuid
 
 import discord
-from discord.webhook import SyncWebhook
 import requests
+from discord.webhook import SyncWebhook
 
 from HomeGuard.bots.bot import Bot
-from HomeGuard.data.event import Event, EventTrigger
+from HomeGuard.data.event import EventTrigger
 from HomeGuard.data.identity import DeviceIdentity
 
 
@@ -28,7 +27,7 @@ class DiscordBot(Bot):
             embed = discord.Embed(
                 title='Activity notification',
                 colour=discord.Colour.blue(),
-                description=f'A deviced triggered the \'{trigger.event().name()}\' event.',
+                description=f'A device triggered the \'{trigger.event().name()}\' event.',
                 timestamp=datetime.datetime.now()
             )
 

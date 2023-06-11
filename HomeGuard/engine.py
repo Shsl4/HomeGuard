@@ -1,4 +1,6 @@
 import os
+import random
+import string
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor
@@ -8,7 +10,7 @@ from dotenv import load_dotenv
 from scapy.config import conf
 from scapy.layers.inet import IP, UDP
 from scapy.layers.netbios import NBNSQueryRequest
-from scapy.sendrecv import sniff, sr1, srp
+from scapy.sendrecv import sniff, sr1, srp, send
 from scapy.volatile import RandShort
 
 from HomeGuard.bots.bot import Bot
@@ -34,9 +36,11 @@ class Engine:
         event: Event = self.__event_manager.event('Main')
         trigger = event.create_trigger()
 
-        trigger.add_day(10)
+        trigger.add_day(11)
         trigger.add_month(6)
-        trigger.update_time_window(TimeWindow(18, 24))
+        trigger.update_time_window(TimeWindow(0, 24))
+
+        self.__event_manager.write_events()
 
     def run_scheduler(self):
 
@@ -62,6 +66,11 @@ class Engine:
         self.try_start_discord_bot()
 
         sniff(session=Session, store=False, session_kwargs={'engine': self})
+
+    def generate_name(self):
+        string_length = random.randint(1, 15)
+        letters_and_digits = string.ascii_letters + string.digits
+        return ''.join(random.choice(letters_and_digits) for i in range(string_length))
 
     def console_thread(self):
 
@@ -91,6 +100,7 @@ class Engine:
                     continue
 
                 event_manager.event('Main').add_identity(uuid.UUID(args[1]))
+                event_manager.write_events()
 
             elif command == 'arp':
                 if len(args) < 2:
@@ -102,24 +112,18 @@ class Engine:
                     print(Adapter.arp_scan(args[1], float(args[2])))
 
             elif command == 'netbios':
-                ans, _ = srp(IP(dst=args[1]) /
-                             NBNSQueryRequest(NAME_TRN_ID=0x8228, QUESTION_NAME='*', QUESTION_TYPE='NBSTAT'),
-                             timeout=1.0)
-                print(ans)
+
+                if len(args) < 2:
+                    print('This command requires more arguments.')
+                    continue
+
+                Adapter.send_netbios_name_request(args[1])
+                print('Sent NetBIOS name request.')
 
             elif command == 'send':
                 if len(args) < 2:
                     print('This command requires more arguments.')
                     continue
-
-            elif command == 'netbios':
-                if len(args) < 2:
-                    print('This command requires more arguments.')
-                    continue
-                if len(args) == 2:
-                    print(Adapter.netbios_name(args[1]))
-                elif len(args) == 3:
-                    print(Adapter.netbios_name(args[1], int(args[2])))
 
             else:
                 print(f'Unrecognized command: {command}')

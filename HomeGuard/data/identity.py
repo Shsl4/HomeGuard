@@ -25,7 +25,7 @@ class DeviceIdentity:
 
         for ip in self.ip_addresses:
 
-            netbios_name = Adapter.netbios_name(ip)
+            netbios_name = Adapter.host_name(ip)
             if netbios_name != ip:
 
                 if len(self.recognized_names) == 0:

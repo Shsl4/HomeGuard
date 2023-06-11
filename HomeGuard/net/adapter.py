@@ -1,14 +1,14 @@
 import os
+import random
 import socket
 
 from netaddr import IPNetwork
 from netifaces import AF_INET, AF_LINK, ifaddresses
-from scapy.all import conf, srp, sr1
-from scapy.layers.l2 import Ether, ARP
+from scapy.all import conf, srp
 from scapy.layers.inet import IP, UDP
-from scapy.layers.netbios import NBNSHeader, NBNSNodeStatusRequest
-from HomeGuard.log.logger import Logger
-from HomeGuard.utils.mac_database import MacDatabase
+from scapy.layers.l2 import Ether, ARP
+from scapy.layers.netbios import NBNSHeader, NBNSQueryRequest
+from scapy.sendrecv import send, sr1
 
 
 class Adapter:
@@ -65,13 +65,29 @@ class Adapter:
         result = []
 
         for _, pkt in ans:
-            result.append((pkt[ARP].psrc, Adapter.netbios_name(pkt[ARP].psrc), pkt[Ether].src))
+            result.append((pkt[ARP].psrc, Adapter.host_name(pkt[ARP].psrc), pkt[Ether].src))
 
         return result
 
     @staticmethod
-    def netbios_name(ip, port=137):
+    def host_name(ip, port=137):
         return socket.getnameinfo((ip, port), 0)[0]
+
+    @staticmethod
+    def send_netbios_name_request(ip: str):
+
+        trn_id = random.randint(1, 0xFFFF)
+
+        header = NBNSHeader(NAME_TRN_ID=trn_id, NM_FLAGS='B')
+
+        query = NBNSQueryRequest(SUFFIX="workstation",
+                             QUESTION_NAME=b'*\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
+                             QUESTION_TYPE='NBSTAT')
+
+        pkt = IP(dst=ip) / UDP(sport=137, dport='netbios_ns') / header / query
+
+        # Send package and do not wait for response. The response will be caught by the main sniff loop
+        sr1(pkt, timeout=0.0001)
 
     @staticmethod
     def validate_mac(mac):
