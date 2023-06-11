@@ -1,0 +1,47 @@
+:root{
+    --shark-50: #f6f6f7;
+    --shark-100: #e1e3e6;
+    --shark-200: #c2c5cd;
+    --shark-300: #9ba0ad;
+    --shark-400: #767c8b;
+    --shark-500: #5c6070;
+    --shark-600: #484c59;
+    --shark-700: #3c3f49;
+    --shark-800: #33343c;
+    --shark-900: #2d2e34;
+    --shark-950: #1e1f25;
+}
+
+body{
+    position: absolute;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--shark-950);
+}
+
+.basic-text{
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 12pt;
+    color: white;
+}
+
+.secondary-text{
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 10pt;
+    color: var(--shark-300);
+}
+
+.sidebar{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: inherit;
+    min-width: 50pt;
+    max-width: 50pt;
+    height: 100%;
+    border-right: 1px solid var(--shark-900);
+    transition: ease-in-out 0.25s;
+}
