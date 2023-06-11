@@ -6,7 +6,10 @@ from concurrent.futures import ThreadPoolExecutor
 import schedule
 from dotenv import load_dotenv
 from scapy.config import conf
-from scapy.sendrecv import sniff
+from scapy.layers.inet import IP, UDP
+from scapy.layers.netbios import NBNSQueryRequest
+from scapy.sendrecv import sniff, sr1, srp
+from scapy.volatile import RandShort
 
 from HomeGuard.bots.bot import Bot
 from HomeGuard.bots.discord_bot import DiscordBot
@@ -48,8 +51,10 @@ class Engine:
         load_dotenv()
 
         Logger.log("Starting HomeGuard...")
-        Logger.log(f'Using {Adapter.main_adapter()} with ip {Adapter.get_ip()} and hardware address {Adapter.get_mac()}')
-        Logger.log(f'The gateway is {Adapter.get_gateway()} with netmask {Adapter.get_netmask()} ({Adapter.get_cidr()})')
+        Logger.log(
+            f'Using {Adapter.main_adapter()} with ip {Adapter.get_ip()} and hardware address {Adapter.get_mac()}')
+        Logger.log(
+            f'The gateway is {Adapter.get_gateway()} with netmask {Adapter.get_netmask()} ({Adapter.get_cidr()})')
 
         self.executor.submit(self.console_thread)
         self.executor.submit(self.run_scheduler)
@@ -95,6 +100,12 @@ class Engine:
                     print(Adapter.arp_scan(args[1]))
                 elif len(args) == 3:
                     print(Adapter.arp_scan(args[1], float(args[2])))
+
+            elif command == 'netbios':
+                ans, _ = srp(IP(dst=args[1]) /
+                             NBNSQueryRequest(NAME_TRN_ID=0x8228, QUESTION_NAME='*', QUESTION_TYPE='NBSTAT'),
+                             timeout=1.0)
+                print(ans)
 
             elif command == 'send':
                 if len(args) < 2:

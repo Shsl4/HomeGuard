@@ -7,7 +7,7 @@ class MacDatabase:
     @staticmethod
     def __database():
         if len(MacDatabase._data) == 0:
-            with(open('resources/mac_addresses.csv', encoding="utf8")) as csvfile:
+            with(open('Resources/mac_addresses.csv', encoding="utf8")) as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 for row in reader:
                     MacDatabase._data[row[0]] = row[1]
