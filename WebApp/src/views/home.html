@@ -6,29 +6,69 @@
     <link rel="stylesheet" href="css/shared.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus Jakarta Sans">
     <script src="https://kit.fontawesome.com/a345e0e583.js" crossorigin="anonymous"></script>
+
+    
 </head>
 <body>
+    <section class="add-event-section">
+        <div class="main-square">
+            <div class="title-event">
+                <h2>Add New Event</h2>
+            </div>
 
-    <div class="sidebar">
-        <i class="fa-solid fa-house fa-xl secondary-text"></i>
-    </div>
+            <div class="input-form-div">
+
+                <form>
+                    <input type="text" placeholder="Event Name"  oninput="checkName()" class="event-name">
+
+                    <div class="list-devices-div">
+                        <select class="list-devices" onchange="checkDevice()">
+                            <option value="" selected disabled hidden>Select Device</option>
+                            <option>Pierre</option>
+                            <option>Waël</option>
+                        </select>
+                    </div>
+                    <div class="date-input display-flex-space-between">
+                        <input type="date" placeholder="Start Date" class="date-start" onchange="checkDate()">
+                        <input type="date" placeholder="End Date" class="date-end" onchange="checkDate()">
+                    </div>
+
+                    <div class="list-day-div">
+                        <button type="button" class="day">Monday</button>
+                        <button type="button" class="day">Tuesday</button>
+                        <button type="button" class="day">Wednesday</button>
+                        <button type="button" class="day">Thursday</button>
+                        <button type="button" class="day">Friday</button>
+                        <button type="button" class="day">Saturday</button>
+                        <button type="button" class="day">Sunday</button>
+                    </div>
+
+                    <div class="hour-input display-flex-space-between">
+                        <input type="time" class="hour-start" onchange="checkHour()">
+                        <input type="time" class="hour-end" onchange="checkHour()">
+                    </div>
+
+                    <div class="submit-event-div">
+                        <button type="button" class="submit-event" onclick="checkInputEvent()">CREATE</button>
+                    </div>
+                    
+                    
+                </form>
+            </div>
+
+            <div class="error-message-div"> 
+                <h4 class="error-message-name" style="color: red">The name have to be at least 5 characters.</h4>
+                <h4 class="error-message-device" style="color: red">Select a device</h4>
+                <h4 class="error-message-date" style="color: red">Select an interval</h4>
+                <h4 class="error-message-day" style="color: red">Select at least one day</h4>
+                <h4 class="error-message-hour" style="color: red">Select a hour</h4>
+            </div>
+        </div>
+
+
+    </section>
+
 
 </body>
-<script>
-    var elems = document.getElementsByClassName('sidebar');
-    for(var i = 0; i < elems.length; ++i){
-        let elem = elems[i];
-        elem.addEventListener('mouseenter', () => {
-
-            elem.style.maxWidth = "15%";
-
-        });
-
-        elem.addEventListener('mouseout', () => {
-
-            elem.style.maxWidth = "50pt";
-
-        });
-    }
-</script>
+<script src="js/add-event.js"></script>
 </html>

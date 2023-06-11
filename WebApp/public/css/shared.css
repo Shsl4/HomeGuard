@@ -45,3 +45,116 @@ body{
     border-right: 1px solid var(--shark-900);
     transition: ease-in-out 0.25s;
 }
+
+
+/* Property Design Add Event. */
+
+.add-event-section{
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.add-event-section .main-square{
+    width: 25%;
+    height: 600px;
+
+    padding: 20px;
+
+
+    background-color: white;
+
+    border-radius: 10px;
+
+}
+
+.add-event-section .main-square h2{
+    color: var(--shark-700);
+}
+
+.add-event-section .main-square .input-form-div form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    width: 100%;
+
+}
+
+.add-event-section .main-square .input-form-div form input{
+    border-top: none;
+    border-left: none;
+    border-right: none;
+
+    padding-bottom: 7px;
+    margin-top: 30px;
+    
+    outline: none;
+}
+
+
+.list-devices-div .list-devices{
+    margin-top: 30px;
+
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    outline: none;
+}
+
+.add-event-section .main-square .input-form-div form .submit-event-div{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    margin-top: 35px;
+
+}
+
+.add-event-section .main-square .input-form-div form .submit-event-div button{
+    background-color: rgb(0, 140, 255);
+    border: none;
+
+    width: 100px;
+    height: 30px;
+
+    border-radius: 5px;
+
+    font-weight: bold;
+    color: white;
+
+    cursor: pointer;
+
+}
+
+/* Property Design Button Select Day. */
+
+.list-day-div{
+    display: flex;
+    justify-content: center;
+    justify-content: space-between;
+}
+
+.list-day-div .day{
+    margin-top: 20px;
+
+    background-color: var(--shark-600);
+    font-weight: bold;
+    color: white;
+
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+
+    cursor: pointer;
+}
+
+/* General Property */
+
+.display-flex-space-between{
+    display: flex;
+    justify-content: space-between; 
+}
