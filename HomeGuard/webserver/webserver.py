@@ -30,16 +30,16 @@ class WebServer:
         self.register_routes()
 
     def run(self):
-        serve(self.__app, host=Adapter.get_ip(), port=8080)
+        serve(self.__app, host='0.0.0.0', port=8080)
 
     def register_routes(self):
         @self.__app.route('/')
         def hello():
-            return send_from_directory(os.getcwd() + '/HomeGuard/webserver/templates/', 'home.html')
+            return send_from_directory('templates/', 'home.html')
 
         @self.__app.route('/<path:path>')
         def distribute_public(path):
-            return send_from_directory(os.getcwd() + '/HomeGuard/webserver/static', path)
+            return send_from_directory('static/', path)
 
         @self.__app.route('/event/<path:path>')
         def get_event(path):
@@ -88,3 +88,7 @@ class WebServer:
         def get_devices():
             manager: IdentityManager = self.__engine.identity_manager()
             return jsonify(manager.identities())
+
+        @self.__app.route('/event_setup')
+        def event_setup():
+            return send_from_directory('templates/', 'event_setup.html')

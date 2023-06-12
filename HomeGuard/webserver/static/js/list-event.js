@@ -120,6 +120,7 @@ class DeviceInfo extends HTMLElement {
 }
 
 class EventInfo extends HTMLElement {
+
     constructor() {
         super();
     }

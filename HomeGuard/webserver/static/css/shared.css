@@ -77,6 +77,33 @@ body{
 
 }
 
+.add-event-section{
+
+    margin: 10pt;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    min-heignt: 300pt;
+    min-width: 400pt;
+
+    background-color: white;
+    border-radius: 8pt;
+    border: solid var(--border) 2pt;
+
+}
+
+.submit-button-div{
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+
 .list-div{
 
     display: flex;
@@ -88,25 +115,76 @@ body{
     box-sizing: border-box;
 
 }
+.event-container{
+    overflow: scroll;
+    width: 100%;
+}
+
+.event-container::-webkit-scrollbar{
+    display: none;
+}
 
 .button-style{
 
-    border: 0;
     border-radius: 5pt;
-    color: white;
+    color: var(--text);
     padding: 5pt;
     min-width: 75pt;
-    background-color: var(--text);
+    min-height: 30pt;
+    border: solid var(--border) 2pt;
+    background-color: white;
+    transition: ease-in-out 0.1s;
 
 }
 
-.button-style:hover{
-    filter: brightness(125%);
+.button-style:hover {
+
+    background-color: var(--background);
+    transition: ease-in-out 0.1s;
+
 }
 
-.button-style:active{
-    filter: brightness(90%);
+.button-style:active {
+
+    background-color: var(--secondary-background);
+    transition: ease-in-out 0.1s;
+
 }
+
+.input-field{
+
+    outline: 0;
+
+    border: 2pt solid var(--border);
+    border-radius: 5pt;
+
+    background-color: var(--background);
+
+    padding: 8pt;
+
+    min-width: 75pt;
+    min-height: 15pt;
+
+}
+
+.hour-input{
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.hour-div{
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5pt;
+    margin: 5pt;
+
+}
+
 
 .event-list-category-text {
     font-family: "Lato", sans-serif;
@@ -122,92 +200,43 @@ body{
 
     padding: 20px;
 
-
     background-color: white;
 
     border-radius: 10px;
 
 }
 
-.add-event-section .main-square h2{
-    color: var(--shark-700);
-}
-
-.add-event-section .main-square .input-form-div form{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-
-    width: 100%;
-
-}
-
-.add-event-section .main-square .input-form-div form input{
-    border-top: none;
-    border-left: none;
-    border-right: none;
-
-    padding-bottom: 7px;
-    margin-top: 30px;
-    
-    outline: none;
-}
-
-
-.list-devices-div .list-devices{
-    margin-top: 30px;
-
-    border-top: none;
-    border-left: none;
-    border-right: none;
-    outline: none;
-}
-
-.add-event-section .main-square .input-form-div form .submit-event-div{
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-
-    margin-top: 35px;
-
-}
-
-.add-event-section .main-square .input-form-div form .submit-event-div button{
-    background-color: rgb(0, 140, 255);
-    border: none;
-
-    width: 100px;
-    height: 30px;
-
-    border-radius: 5px;
-
-    font-weight: bold;
-    color: white;
-
-    cursor: pointer;
-
-}
 
 /* Property Design Button Select Day. */
 
 .list-day-div{
     display: flex;
-    justify-content: center;
     justify-content: space-between;
 }
 
-.list-day-div .day{
-    margin-top: 20px;
+.day{
 
-    background-color: var(--shark-600);
+    width: 25pt;
+    height: 25pt;
+
+    background-color: var(--light-text);
     font-weight: bold;
     color: white;
+    transition: ease-in-out 0.1s;
 
     border: none;
-    border-radius: 5px;
-    padding: 5px;
+    border-radius: 50%;
+    padding: 5pt;
 
     cursor: pointer;
+}
+
+.day-selected{
+
+    transition: ease-in-out 0.1s;
+    background-color: var(--primary);
+
+
 }
 
 /* General Property */
