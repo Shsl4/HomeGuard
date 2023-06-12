@@ -9,6 +9,7 @@ from waitress import serve
 
 from HomeGuard.data.event import EventManager, EventEncoder
 from HomeGuard.data.identity import IdentityManager
+from HomeGuard.net.adapter import Adapter
 
 
 class FlaskJSONProvider(JSONProvider):
@@ -29,7 +30,7 @@ class WebServer:
         self.register_routes()
 
     def run(self):
-        serve(self.__app, host="localhost", port=8080)
+        serve(self.__app, host=Adapter.get_ip(), port=8080)
 
     def register_routes(self):
         @self.__app.route('/')
