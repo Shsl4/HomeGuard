@@ -4,6 +4,8 @@ if [ "$(id -u)" -ne 0 ]; then echo "Please run as root." >&2; exit 1; fi
 
 cp -a . /opt/HomeGuard
 
+echo "HOMEGUARD_INSTALLED=true" > /opt/HomeGuard/.env
+
 SCRIPT_PATH="/opt/HomeGuard/main.py"
 
 SERVICE_FILE="/etc/systemd/system/homeguard.service"

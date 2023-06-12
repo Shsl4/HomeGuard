@@ -1,8 +1,11 @@
 import dataclasses
 import datetime
 import json
+import os
 import uuid
 from enum import Enum
+
+from HomeGuard.utils.resource_paths import ResourcePaths
 
 
 class Event:
@@ -230,12 +233,17 @@ class EventManager:
         json_object = json.dumps(self.__events, cls=EventEncoder,
                                  indent=2, ensure_ascii=False).encode('utf-8')
 
-        with open("events.json", "w") as outfile:
+        filename = ResourcePaths.events_path()
+
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        with open(filename, "w") as outfile:
             outfile.write(json_object.decode())
 
     def parse_events(self):
+
         try:
-            with open("events.json", "r") as infile:
+            with open(ResourcePaths.events_path(), "r") as infile:
                 json_data = json.loads(infile.read())
 
                 for data in json_data:

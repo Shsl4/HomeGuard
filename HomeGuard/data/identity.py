@@ -1,6 +1,7 @@
 import dataclasses
 import datetime
 import json
+import os
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -8,6 +9,7 @@ from uuid import UUID
 
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.utils.mac_database import MacDatabase
+from HomeGuard.utils.resource_paths import ResourcePaths
 
 
 @dataclass(order=True)
@@ -151,7 +153,11 @@ class IdentityManager:
         json_object = json.dumps(self.__identities, cls=IdentityEncoder,
                                  indent=2, ensure_ascii=False).encode('utf-8')
 
-        with open("identities.json", "w") as outfile:
+        filename = ResourcePaths.identities_path()
+
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+        with open(filename, "w") as outfile:
             outfile.write(json_object.decode())
 
     def identities(self):
@@ -163,8 +169,10 @@ class IdentityManager:
                 return identity.refresh(name, ip, mac)
 
     def parse_identities(self):
+
         try:
-            with open("identities.json", "r") as infile:
+            with open(ResourcePaths.identities_path(), "r") as infile:
+
                 json_data = json.loads(infile.read())
 
                 for data in json_data:
