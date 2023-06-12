@@ -55,6 +55,9 @@ function retrieveEvents(){
             eventInfo.setAttribute('end', event.trigger.end_date);
             eventInfo.setAttribute('time', `${event.trigger.start_time} - ${event.trigger.end_time}`);
             eventInfo.setAttribute('button', 'Edit');
+            eventInfo.setAttribute('onclick', `editEvent(${i})`);
+            
+        
             
             eventInfo.setAttribute('button-index', i);
 
@@ -114,32 +117,39 @@ function retrieveDevices(){
 function editEvent(index){
     
     const overlay = document.querySelector('.editOverlay');
-    const getEvents = document.querySelectorAll('.list-div');
-    const eventName = document.getElementById('event-name');
-    const selectName = document.getElementById('device-select');
-    const dateStart = document.getElementById('date-start');
-    const dateEnd = document.getElementById('date-end');
-    const hourStart = document.getElementById('hour-start');
-    const hourEnd = document.getElementById('hour-end');
-    const listButtonDiv = document.querySelector('.submit-button-div');
+    const eventName = element('event-name');
+    const selectName = element('device-select');
+    const dateStart = element('date-start');
+    const dateEnd = element('date-end');
+    const hourStart = element('hour-start');
+    const hourEnd = element('hour-end');
+    const listButtonDiv = element('submit-div');
 
-    var nameEvent = getEvents[index + 1].getAttribute('name'); // + 1 because there is already a list-div that is not use for event.
-    var deviceName = getEvents[index + 1].getAttribute('devices');
-    var listDay = getEvents[index + 1].getAttribute('days').split(',');
-    var start = getEvents[index + 1].getAttribute('start').split('/');
-    var end = getEvents[index + 1].getAttribute('end').split('/');
-    var time = getEvents[index + 1].getAttribute('time').replace(' ', '').split('-');
+    let event = cached_events[index];
 
+    let deviceNames = []
+
+    for(var j = 0; j < event.ids.length; ++j){
+
+        let device = deviceById(event.ids[j]);
+
+        if(device != null){
+            deviceNames.push(device.display_name);
+        }
+
+    }
+    
     // We set the values.
 
 
-    eventName.value = nameEvent;
-    selectName.value = deviceName;
-    dateStart.value = `${start[2]}-${start[1]}-${start[0]}`;
-    dateEnd.value = `${end[2]}-${end[1]}-${end[0]}`;
-    hourStart.value = time[0];
-    hourEnd.value = time[1].replace(' ', '');
+    eventName.value = event.name;
+    selectName.value = deviceNames[0];
+    dateStart.value = event.trigger.start_date;
+    dateEnd.value = event.trigger.end_date;
+    hourStart.value = event.trigger.start_time;
+    hourEnd.value = event.trigger.end_time;
 
+    
     const deleteButton = document.createElement('button');
     deleteButton.innerHTML = "Delete";
     deleteButton.classList.add('delete-button', 'button-style', 'basic-text');
@@ -149,8 +159,24 @@ function editEvent(index){
     deleteButton.addEventListener('click', function() {
         console.log(`Event to delete is ${index}`);
     });
+    const existingDeleteButton = listButtonDiv.querySelector('.delete-button');
+    if (!existingDeleteButton) {
+        const deleteButton = document.createElement('button');
+        deleteButton.innerHTML = "Delete";
+        deleteButton.classList.add('delete-button', 'button-style', 'basic-text');
 
-    listButtonDiv.appendChild(deleteButton);
+        // Function to delete the event. TODO.
+        deleteButton.addEventListener('click', function() {
+            console.log(`Event to delete is ${index}`);
+        });
+
+        listButtonDiv.appendChild(deleteButton);
+    } else {
+        existingDeleteButton.addEventListener('click', function() {
+            console.log(`Event to delete is ${index}`);
+        });
+    }
+    
     
     overlay.style.display = "flex";
     overlay.setAttribute('is-active', 'true');
@@ -232,7 +258,7 @@ function generateListElementBody(elem, widths, attrs){
 
         button.textContent = elem.getAttribute('button');
         button.classList.add('button-style')
-        button.setAttribute('onclick',  elem.hasAttribute("onclick") ? elem.getAttribute("onclick") : `editEvent(${elem.getAttribute('button-index')})`);
+        button.setAttribute('onclick',  elem.hasAttribute("onclick") ? elem.getAttribute("onclick") : ``);
         button.setAttribute('index', elem.getAttribute('button-index'));
 
     }
