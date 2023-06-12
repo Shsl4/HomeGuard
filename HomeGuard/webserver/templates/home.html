@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <script src="https://kit.fontawesome.com/a345e0e583.js" crossorigin="anonymous"></script>
+    <script src="js/list-event.js"></script>
+</head>
+<body>
+
+    <div class="navbar">
+
+    </div>
+
+    <div class="main-view">
+
+        <div class="section">
+
+            <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%">
+                <div style="margin: 10pt;">
+                    <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Manage events</h2>
+                    <label class="secondary-text">Add, edit or remove notification events</label>
+                </div>
+            </div>
+
+            <event-info class="list-div event-list-category-text"
+                        name="Name"
+                        devices="Devices"
+                        days="Days"
+                        start="Start"
+                        end="End"
+                        time="Time Range">
+            </event-info>
+
+            <div id="event-container" style="overflow: scroll; width: 100%">
+
+            </div>
+
+        </div>
+
+        <div class="section">
+
+            <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%">
+                <div style="margin: 10pt;">
+                    <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Manage devices</h2>
+                    <label class="secondary-text">Manage your network devices</label>
+                </div>
+            </div>
+
+            <device-info class="list-div event-list-category-text"
+                        name="Name"
+                        ip="Last IP"
+                        mac="MAC Address"
+                        activity="Last activity"
+                        uuid="Unique ID">
+            </device-info>
+
+            <div id="device-container" style="overflow: scroll; width: 100%">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

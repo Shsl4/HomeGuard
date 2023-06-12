@@ -4,16 +4,22 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="css/shared.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Plus Jakarta Sans">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <script src="https://kit.fontawesome.com/a345e0e583.js" crossorigin="anonymous"></script>
-
-    
 </head>
 <body>
-    <section class="add-event-section">
+
+    <div class="navbar">
+
+    </div>
+
+    <div class="main-view">
+
+        <div class="add-event-section">
         <div class="main-square">
-            <div class="title-event">
-                <h2>Add New Event</h2>
+            <div class="title-event basic-text">
+                <h2>Create Event</h2>
+                <label class="secondary-text">Add a new event to send a notification</label>
             </div>
 
             <div class="input-form-div">
@@ -51,22 +57,30 @@
                     <div class="submit-event-div">
                         <button type="button" class="submit-event" onclick="checkInputEvent()">CREATE</button>
                     </div>
-                    
-                    
+
                 </form>
             </div>
 
-            <div class="error-message-div"> 
-                <h4 class="error-message-name" style="color: red">The name have to be at least 5 characters.</h4>
-                <h4 class="error-message-device" style="color: red">Select a device</h4>
-                <h4 class="error-message-date" style="color: red">Select an interval</h4>
-                <h4 class="error-message-day" style="color: red">Select at least one day</h4>
-                <h4 class="error-message-hour" style="color: red">Select a hour</h4>
+            <div>
+
+                <label class="secondary-text">Requirements:</label>
+
+                <ul class="secondary-text" id="requirement-div">
+                    <li id="name-requirement" style="color: red">At least 5 characters.</li>
+                    <li id="device-requirement" style="color: red">Select a device</li>
+                    <li id="date-requirement" style="color: red">Select an interval</li>
+                    <li id="day-requirement" style="color: red">Select at least one day</li>
+                    <li id="hour-requirement" style="color: red">Select a hour</li>
+                </ul>
+
             </div>
+
+
         </div>
 
 
-    </section>
+    </div>
+    </div>
 
 
 </body>

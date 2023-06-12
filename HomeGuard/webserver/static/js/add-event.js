@@ -1,3 +1,7 @@
+function element(id){
+    return document.getElementById(id);
+}
+
 const nameEvent = document.querySelector('.event-name');
 const selectedDevice = document.querySelector('.list-devices');
 const selectedDateStart = document.querySelector('.date-start');
@@ -8,11 +12,11 @@ const selectedHourEnd = document.querySelector('.hour-end');
 
 /* For error message. */
 
-const errorMessageName = document.querySelector('.error-message-name');
-const errorMessageDevice = document.querySelector('.error-message-device');
-const errorMessageDate = document.querySelector('.error-message-date');
-const errorMessageDay = document.querySelector('.error-message-day');
-const errorMessageHour = document.querySelector('.error-message-hour');
+const errorMessageName = element('name-requirement');
+const errorMessageDevice = element('device-requirement');
+const errorMessageDate = element('date-requirement');
+const errorMessageDay = element('day-requirement');
+const errorMessageHour = element('hour-requirement');
 
 // JSON.
 

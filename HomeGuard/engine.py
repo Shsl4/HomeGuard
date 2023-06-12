@@ -1,3 +1,4 @@
+import datetime
 import os
 import random
 import string
@@ -8,18 +9,16 @@ from concurrent.futures import ThreadPoolExecutor
 import schedule
 from dotenv import load_dotenv
 from scapy.config import conf
-from scapy.layers.inet import IP, UDP
-from scapy.layers.netbios import NBNSQueryRequest
-from scapy.sendrecv import sniff, sr1, srp, send
-from scapy.volatile import RandShort
+from scapy.sendrecv import sniff
 
 from HomeGuard.bots.bot import Bot
 from HomeGuard.bots.discord_bot import DiscordBot
-from HomeGuard.data.event import EventManager, TimeWindow, Event
+from HomeGuard.data.event import EventManager, Event, Weekdays
 from HomeGuard.data.identity import IdentityManager
 from HomeGuard.log.logger import Logger
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.net.session import Session
+from HomeGuard.webserver.webserver import WebServer
 
 
 class Engine:
@@ -31,14 +30,17 @@ class Engine:
         self.__identity_manager = IdentityManager()
         self.__event_manager = EventManager()
         self.__bots: list[Bot] = []
-        self.executor = ThreadPoolExecutor()
+        self.__executor = ThreadPoolExecutor()
+        self.__webserver = WebServer(self)
 
         event: Event = self.__event_manager.event('Main')
-        trigger = event.create_trigger()
+        trigger = event.get_trigger()
 
-        trigger.add_day(11)
-        trigger.add_month(6)
-        trigger.update_time_window(TimeWindow(0, 24))
+        trigger.update_date_range(datetime.date(2023, 6, 1), datetime.date(2023, 6, 30))
+        trigger.update_time_range(datetime.time(0, 0), datetime.time(23, 59))
+        trigger.add_weekday(Weekdays.Tuesday)
+        trigger.add_weekday(Weekdays.Friday)
+        trigger.add_weekday(Weekdays.Sunday)
 
         self.__event_manager.write_events()
 
@@ -60,17 +62,13 @@ class Engine:
         Logger.log(
             f'The gateway is {Adapter.get_gateway()} with netmask {Adapter.get_netmask()} ({Adapter.get_cidr()})')
 
-        self.executor.submit(self.console_thread)
-        self.executor.submit(self.run_scheduler)
+        self.__executor.submit(self.console_thread)
+        self.__executor.submit(self.run_scheduler)
+        self.__executor.submit(self.__webserver.run)
 
-        self.try_start_discord_bot()
+        self.setup_discord_webhook()
 
         sniff(session=Session, store=False, session_kwargs={'engine': self})
-
-    def generate_name(self):
-        string_length = random.randint(1, 15)
-        letters_and_digits = string.ascii_letters + string.digits
-        return ''.join(random.choice(letters_and_digits) for i in range(string_length))
 
     def console_thread(self):
 
@@ -92,7 +90,7 @@ class Engine:
 
             elif command == 'dump':
                 manager.write_identities()
-                print('Dumped to identities.json')
+                Logger.log('Dumped to identities.json')
 
             elif command == 'ev':
                 if len(args) < 2:
@@ -107,18 +105,18 @@ class Engine:
                     print('This command requires more arguments.')
                     continue
                 if len(args) == 2:
-                    print(Adapter.arp_scan(args[1]))
+                    Logger.log(Adapter.arp_scan(args[1]))
                 elif len(args) == 3:
-                    print(Adapter.arp_scan(args[1], float(args[2])))
+                    Logger.log(Adapter.arp_scan(args[1], float(args[2])))
 
             elif command == 'netbios':
 
                 if len(args) < 2:
-                    print('This command requires more arguments.')
+                    Logger.log('This command requires more arguments.')
                     continue
 
                 Adapter.send_netbios_name_request(args[1])
-                print('Sent NetBIOS name request.')
+                Logger.log('Sent NetBIOS name request.')
 
             elif command == 'send':
                 if len(args) < 2:
@@ -126,9 +124,9 @@ class Engine:
                     continue
 
             else:
-                print(f'Unrecognized command: {command}')
+                Logger.log(f'Unrecognized command: {command}')
 
-    def try_start_discord_bot(self):
+    def setup_discord_webhook(self):
 
         bot = DiscordBot(os.getenv('WEBHOOK_URL'))
 
@@ -136,7 +134,7 @@ class Engine:
             bot.launch()
             self.__bots.append(bot)
         except Exception as e:
-            print(e.args[0])
+            Logger.log(e.args[0])
 
     def notify(self, name: str | None, ip: str | None, mac: str):
 

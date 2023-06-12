@@ -7,6 +7,7 @@ from discord.webhook import SyncWebhook
 from HomeGuard.bots.bot import Bot
 from HomeGuard.data.event import EventTrigger
 from HomeGuard.data.identity import DeviceIdentity
+from HomeGuard.log.logger import Logger
 
 
 class DiscordBot(Bot):
@@ -18,7 +19,7 @@ class DiscordBot(Bot):
 
     def launch(self):
         self.webhook = SyncWebhook.from_url(self.webhook_url, session=requests.Session())
-        print('Created discord webhook.')
+        Logger.log('Created discord webhook.')
 
     def notify_activity(self, identity: DeviceIdentity, trigger: EventTrigger):
 

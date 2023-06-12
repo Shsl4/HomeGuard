@@ -1,15 +1,13 @@
 :root{
-    --shark-50: #f6f6f7;
-    --shark-100: #e1e3e6;
-    --shark-200: #c2c5cd;
-    --shark-300: #9ba0ad;
-    --shark-400: #767c8b;
-    --shark-500: #5c6070;
-    --shark-600: #484c59;
-    --shark-700: #3c3f49;
-    --shark-800: #33343c;
-    --shark-900: #2d2e34;
-    --shark-950: #1e1f25;
+
+    --primary: #6E39CB;
+    --text: #3A3541;
+    --light-text: #89868D;
+    --disabled-text: #B4B2B7;
+    --background: #F4F5F9;
+    --secondary-background: #E7E7F4;
+    --border: #DBDCDE;
+
 }
 
 body{
@@ -18,49 +16,109 @@ body{
     margin: 0;
     height: 100%;
     width: 100%;
-    background-color: var(--shark-950);
+    display: flex;
+    flex-direction: row;
+    background-color: var(--secondary-background);
 }
 
 .basic-text{
-    font-family: "Plus Jakarta Sans", sans-serif;
+    font-family: "Lato", sans-serif;
     font-size: 12pt;
-    color: white;
+    color: var(--text);
 }
 
-.secondary-text{
-    font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 10pt;
-    color: var(--shark-300);
+.secondary-text {
+    font-family: "Lato", sans-serif;
+    font-size: 12pt;
+    color: var(--light-text);
+
 }
 
-.sidebar{
+.navbar{
+
+    height: 100%;
+    width: 15%;
+    background-color: white
+
+}
+
+.main-view{
+
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: inherit;
-    min-width: 50pt;
-    max-width: 50pt;
+    width: 100%;
     height: 100%;
-    border-right: 1px solid var(--shark-900);
-    transition: ease-in-out 0.25s;
+
 }
 
 
 /* Property Design Add Event. */
 
-.add-event-section{
-    height: 100%;
+.section{
+
+    height: 50%;
+    width: 75%;
+
+    margin: 10pt;
 
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    min-heignt: 500pt;
+    min-width: 750pt;
+
+    background-color: white;
+    border-radius: 8pt;
+    border: solid var(--border) 2pt;
+
 }
 
+.list-div{
 
-.add-event-section .main-square{
-    width: 25%;
-    height: 600px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: solid var(--border) 2pt;
+    width: 100%;
+    padding: 10pt;
+    box-sizing: border-box;
+
+}
+
+.button-style{
+
+    border: 0;
+    border-radius: 5pt;
+    color: white;
+    padding: 5pt;
+    min-width: 75pt;
+    background-color: var(--text);
+
+}
+
+.button-style:hover{
+    filter: brightness(125%);
+}
+
+.button-style:active{
+    filter: brightness(90%);
+}
+
+.event-list-category-text {
+    font-family: "Lato", sans-serif;
+    font-size: 13pt;
+    font-weight: bold;
+    color: var(--text);
+}
+
+.main-square{
+
+    width: 100%;
+    height: 100%;
 
     padding: 20px;
 

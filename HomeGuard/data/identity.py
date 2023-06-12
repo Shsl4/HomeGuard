@@ -1,4 +1,5 @@
 import dataclasses
+import datetime
 import json
 import time
 import uuid
@@ -16,10 +17,10 @@ class DeviceIdentity:
     display_name: str = ''
     ip_addresses: set[str] = field(default_factory=set[str])
     recognized_names: set[str] = field(default_factory=set[str])
-    last_activity: time.time = time.time()
+    last_activity: datetime.datetime = datetime.datetime.now()
 
     def touch(self):
-        self.last_activity = time.time()
+        self.last_activity = datetime.datetime.now()
 
     def try_assign_netbios_name(self):
 
@@ -70,22 +71,25 @@ class IdentityEncoder(json.JSONEncoder):
             return list(obj)
         if dataclasses.is_dataclass(obj):
             return dataclasses.asdict(obj)
+        if isinstance(obj, datetime.datetime):
+            return '{0}/{1}/{2} {3}:{4}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2),
+                                                obj.year, str(obj.hour).zfill(2), str(obj.minute).zfill(2))
 
         return json.JSONEncoder.default(self, obj)
 
 
 class IdentityManager:
     def __init__(self):
-        self._identities: list[DeviceIdentity] = []
+        self.__identities: list[DeviceIdentity] = []
 
     def print(self):
 
         print('Printing identities: ')
 
-        if len(self._identities) == 0:
+        if len(self.__identities) == 0:
             print('No activity found yet.')
 
-        for identity in self._identities:
+        for identity in self.__identities:
 
             print(f'Display name: {identity.display_name}')
             print(f'UUID: {identity.uuid}')
@@ -98,6 +102,12 @@ class IdentityManager:
                 print('Names: None')
 
             print('')
+
+    def identity_by_id(self, id: uuid.UUID):
+        for identity in self.__identities:
+            if identity.uuid == id:
+                return identity
+        return None
 
     def identity(self, name: str | None, ip: str | None, mac: str) -> DeviceIdentity | None:
 
@@ -112,20 +122,23 @@ class IdentityManager:
         new_identity = DeviceIdentity.make_identity(mac).refresh(None, ip, mac)
         new_identity.try_assign_netbios_name()
 
-        self._identities.append(new_identity)
+        self.__identities.append(new_identity)
         self.write_identities()
 
         return new_identity
 
     def write_identities(self):
 
-        json_object = json.dumps(self._identities, cls=IdentityEncoder,
+        json_object = json.dumps(self.__identities, cls=IdentityEncoder,
                                  indent=2, ensure_ascii=False).encode('utf-8')
 
         with open("identities.json", "w") as outfile:
             outfile.write(json_object.decode())
 
+    def identities(self):
+        return self.__identities
+
     def __find_identity(self, name: str | None, ip: str | None, mac: str):
-        for identity in self._identities:
+        for identity in self.__identities:
             if mac == identity.mac_address:
                 return identity.refresh(name, ip, mac)

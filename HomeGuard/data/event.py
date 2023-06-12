@@ -1,27 +1,11 @@
+import dataclasses
 import datetime
 import json
 import uuid
+from enum import Enum
 from json import JSONEncoder
 
-
-class TimeWindow:
-    def __init__(self, begin: float, end: float):
-
-        if begin < 0.0 or begin > 24.0:
-            raise RuntimeError("Invalid begin time provided to TimeWindow.")
-
-        if end < 0.0 or end > 24.0 or end < begin:
-            raise RuntimeError("Invalid end time provided to TimeWindow.")
-
-        self.begin = begin
-        self.end = end
-
-    def included(self, value: float) -> bool:
-        return self.begin <= value <= self.end
-
-    @staticmethod
-    def all_day():
-        return TimeWindow(0.0, 24.0)
+from HomeGuard.log.logger import Logger
 
 
 class Event:
@@ -29,17 +13,16 @@ class Event:
     def __init__(self, name: str):
         self.__name = name
         self.__ids: set[uuid.UUID] = set()
-        self.__triggers: list[EventTrigger] = []
+        self.__trigger: EventTrigger = EventTrigger(self)
 
         # Represents the devices that triggered this event today.
         self.__triggered_devices: set[uuid.UUID] = set()
-
 
     def to_json(self):
         return {
             'name': self.__name,
             'ids': self.__ids,
-            'triggers': self.__triggers,
+            'trigger': self.__trigger,
         }
 
     def reset(self):
@@ -51,17 +34,15 @@ class Event:
             return None
 
         now = datetime.date.today()
-        now_time = datetime.datetime.now()
+        now_time = datetime.datetime.now().time()
 
-        for trigger in self.__triggers:
+        if self.__trigger.should_trigger(now, now_time):
 
-            if trigger.should_trigger(now.month, now.day, now_time.hour + now_time.minute / 60.0):
+            if device_id in self.__triggered_devices:
+                return None
 
-                if device_id in self.__triggered_devices:
-                    return None
-
-                self.__triggered_devices.add(device_id)
-                return trigger
+            self.__triggered_devices.add(device_id)
+            return self.__trigger
 
         return None
 
@@ -71,52 +52,74 @@ class Event:
     def name(self):
         return self.__name
 
-    def create_trigger(self):
-        trigger = EventTrigger(self)
-        self.__triggers.append(trigger)
-        return trigger
+    def get_trigger(self):
+        return self.__trigger
+
+
+class Weekdays(Enum):
+    Monday = 0
+    Tuesday = 1
+    Wednesday = 2
+    Thursday = 3
+    Friday = 5
+    Saturday = 6
+    Sunday = 7
 
 
 class EventTrigger:
 
     def __init__(self, event: Event):
-        self.__months: set[int] = set()
-        self.__days: set[int] = set()
-        self.__time_window: TimeWindow = TimeWindow.all_day()
+        self.__start_date: datetime.date = datetime.date.today()
+        self.__end_date: datetime.date = datetime.date.today()
+        self.__start_time: datetime.time = datetime.time()
+        self.__end_time: datetime.time = datetime.time()
+        self.__weekdays: set[Weekdays] = set()
         self.__event = event
 
     def to_json(self):
         return {
-            'months': self.__months,
-            'days': self.__days,
-            'time_window': self.__time_window,
+            'start_date': self.__start_date,
+            'end_date': self.__end_date,
+            'start_time': self.__start_time,
+            'end_time': self.__end_time,
+            'weekdays': self.__weekdays
         }
 
-    def should_trigger(self, month: int, day: int, current_time: float):
-        return month in self.__months and day in self.__days and self.__time_window.included(current_time)
+    def reset(self):
+        self.__start_date = datetime.date.today()
+        self.__end_date = datetime.date.today()
+        self.__start_time = datetime.time()
+        self.__end_time = datetime.time()
+        self.__weekdays.clear()
 
-    def add_month(self, month: int):
+    def should_trigger(self, current_date: datetime.date, current_time: datetime.time):
+        return self.__start_date <= current_date <= self.__end_date and \
+            self.__start_time <= current_time <= self.__end_time and \
+            Weekdays(current_date.weekday()) in self.__weekdays
 
-        if month < 0 or month > 12:
-            return
+    def update_date_range(self, begin: datetime.date, end: datetime.date):
+        if begin > end:
+            return False
 
-        self.__months.add(month)
+        self.__start_date = begin
+        self.__end_date = end
 
-    def add_day(self, day: int):
+        return True
 
-        if day < 0 or day > 31:
-            return
+    def update_time_range(self, begin: datetime.time, end: datetime.time):
+        if begin > end:
+            return False
 
-        self.__days.add(day)
+        self.__start_time = begin
+        self.__end_time = end
 
-    def update_time_window(self, window: TimeWindow):
-        self.__time_window = window
+        return True
+
+    def add_weekday(self, day: Weekdays):
+        return self.__weekdays.add(day)
 
     def event(self) -> Event:
         return self.__event
-
-    def time_window(self) -> TimeWindow:
-        return self.__time_window
 
 
 class EventEncoder(json.JSONEncoder):
@@ -126,12 +129,21 @@ class EventEncoder(json.JSONEncoder):
             return str(obj)
         if isinstance(obj, set):
             return list(obj)
-        if isinstance(obj, TimeWindow):
-            return obj.__dict__
         if isinstance(obj, Event):
             return obj.to_json()
         if isinstance(obj, EventTrigger):
             return obj.to_json()
+        if isinstance(obj, datetime.datetime):
+            return '{0}/{1}/{2} {3}:{4}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2),
+                                                obj.year, str(obj.hour).zfill(2), str(obj.minute).zfill(2))
+        if isinstance(obj, datetime.date):
+            return '{0}/{1}/{2}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2), obj.year)
+        if isinstance(obj, datetime.time):
+            return '{0}:{1}'.format(str(obj.hour).zfill(2), str(obj.minute).zfill(2))
+        if isinstance(obj, Weekdays):
+            return obj.name
+        if dataclasses.is_dataclass(obj):
+            return dataclasses.asdict(obj)
 
         return json.JSONEncoder.default(self, obj)
 
@@ -145,7 +157,14 @@ class EventManager:
         for event in self.__events:
             event.reset()
 
-        print('Event manager reset all avents.')
+        Logger.log('Event manager reset all avents.')
+
+    def event_exists(self, name: str) -> bool:
+        for event in self.__events:
+            if event.name() == name:
+                return True
+
+        return False
 
     def event(self, name: str) -> Event:
 
@@ -157,6 +176,9 @@ class EventManager:
         self.__events.add(event)
         return event
 
+    def events(self):
+        return self.__events
+
     def trigger(self, device_id: uuid) -> EventTrigger | None:
 
         for event in self.__events:
@@ -165,7 +187,6 @@ class EventManager:
                 return trigger
 
         return None
-
 
     def write_events(self):
 
