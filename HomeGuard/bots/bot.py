@@ -12,3 +12,7 @@ class Bot:
     @abstractmethod
     def notify_activity(self, identity: DeviceIdentity, trigger: EventTrigger):
         pass
+
+    @abstractmethod
+    def notify_error(self, message: str , exception: BaseException):
+        pass

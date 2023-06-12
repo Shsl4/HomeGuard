@@ -1,15 +1,13 @@
 import json
-import os
 import typing as t
 import uuid
 
-from flask import Flask, render_template, send_from_directory, Response, jsonify
+from flask import Flask, send_from_directory, jsonify
 from flask.json.provider import JSONProvider
 from waitress import serve
 
 from HomeGuard.data.event import EventManager, EventEncoder
 from HomeGuard.data.identity import IdentityManager
-from HomeGuard.net.adapter import Adapter
 
 
 class FlaskJSONProvider(JSONProvider):

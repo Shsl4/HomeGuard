@@ -4,7 +4,6 @@ from scapy.layers.dns import DNS
 from scapy.layers.inet import IP
 from scapy.layers.l2 import Ether, ARP
 
-from HomeGuard.log.logger import Logger
 from HomeGuard.net.adapter import Adapter
 
 
@@ -25,8 +24,6 @@ class Session(DefaultSession):
         self.engine = engine
         self.__count = 0
         self.addresses = []
-
-        Logger.log('Started sniff session.')
 
     def on_packet_received(self, pkt):
         if not pkt:

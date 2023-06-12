@@ -1,4 +1,5 @@
 import datetime
+import traceback
 
 import discord
 import requests
@@ -7,7 +8,6 @@ from discord.webhook import SyncWebhook
 from HomeGuard.bots.bot import Bot
 from HomeGuard.data.event import EventTrigger
 from HomeGuard.data.identity import DeviceIdentity
-from HomeGuard.log.logger import Logger
 
 
 class DiscordBot(Bot):
@@ -19,7 +19,6 @@ class DiscordBot(Bot):
 
     def launch(self):
         self.webhook = SyncWebhook.from_url(self.webhook_url, session=requests.Session())
-        Logger.log('Created discord webhook.')
 
     def notify_activity(self, identity: DeviceIdentity, trigger: EventTrigger):
 
@@ -39,4 +38,22 @@ class DiscordBot(Bot):
             embed.add_field(name='IP addresses', value=','.join(identity.ip_addresses), inline=False)
 
             self.webhook.send(username='HomeGuard', embed=embed)
+
+    def notify_error(self, message: str, exception: BaseException):
+
+        if self.webhook is not None:
+
+            embed = discord.Embed(
+                title='Fatal Error',
+                colour=discord.Colour.red(),
+                description=f'HomeGuard encountered a fatal error and needs to be manually restarted.',
+                timestamp=datetime.datetime.now()
+            )
+
+            embed.add_field(name='Description', value=message)
+            embed.add_field(name='Exception', value=f'{type(exception).__name__}: {exception}', inline=False)
+
+            self.webhook.send(username='HomeGuard', embed=embed)
+
+
 

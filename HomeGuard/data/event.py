@@ -4,8 +4,6 @@ import json
 import uuid
 from enum import Enum
 
-from HomeGuard.log.logger import Logger
-
 
 class Event:
 
@@ -197,8 +195,6 @@ class EventManager:
     def reset_events(self):
         for event in self.__events:
             event.reset()
-
-        Logger.log('Event manager reset all avents.')
 
     def event_exists(self, name: str) -> bool:
         for event in self.__events:

@@ -1,21 +1,16 @@
-import datetime
 import os
-import random
-import string
+import threading
 import time
 import uuid
-from concurrent.futures import ThreadPoolExecutor
 
 import schedule
 from dotenv import load_dotenv
 from scapy.config import conf
 from scapy.sendrecv import sniff
 
-from HomeGuard.bots.bot import Bot
 from HomeGuard.bots.discord_bot import DiscordBot
-from HomeGuard.data.event import EventManager, Event, Weekdays
+from HomeGuard.data.event import EventManager
 from HomeGuard.data.identity import IdentityManager
-from HomeGuard.log.logger import Logger
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.net.session import Session
 from HomeGuard.webserver.webserver import WebServer
@@ -25,18 +20,25 @@ class Engine:
 
     def __init__(self):
 
+        load_dotenv()
+
         conf.verb = 0
 
         self.__identity_manager = IdentityManager()
         self.__event_manager = EventManager()
-        self.__bots: list[Bot] = []
-        self.__executor = ThreadPoolExecutor()
+        self.__discord_webhook: DiscordBot | None = None
         self.__webserver = WebServer(self)
+        self.console_thread = None
+        self.scheduler_thread = None
+        self.webserver_thread = None
 
+    def reset_events(self):
+        self.__event_manager.reset_events()
+        print('Event manager reset all avents.')
 
     def run_scheduler(self):
 
-        schedule.every().day.at("00:00").do(self.__event_manager.reset_events)
+        schedule.every().day.at("00:00").do(self.reset_events)
 
         while True:
             schedule.run_pending()
@@ -46,21 +48,38 @@ class Engine:
 
         load_dotenv()
 
-        Logger.log("Starting HomeGuard...")
-        Logger.log(
+        print("Starting HomeGuard...")
+        print(
             f'Using {Adapter.main_adapter()} with ip {Adapter.get_ip()} and hardware address {Adapter.get_mac()}')
-        Logger.log(
+        print(
             f'The gateway is {Adapter.get_gateway()} with netmask {Adapter.get_netmask()} ({Adapter.get_cidr()})')
 
-        self.__executor.submit(self.console_thread)
-        self.__executor.submit(self.run_scheduler)
-        self.__executor.submit(self.__webserver.run)
+        self.console_thread = threading.Thread(target=self.console_func)
+        self.scheduler_thread = threading.Thread(target=self.run_scheduler)
+        self.webserver_thread = threading.Thread(target=self.__webserver.run)
+
+        self.console_thread.daemon = True
+        self.scheduler_thread.daemon = True
+        self.webserver_thread.daemon = True
+
+        self.console_thread.start()
+        self.scheduler_thread.start()
+        self.webserver_thread.start()
 
         self.setup_discord_webhook()
 
-        sniff(session=Session, store=False, session_kwargs={'engine': self})
+        print('Starting sniff session.')
 
-    def console_thread(self):
+        try:
+            sniff(session=Session, store=False, session_kwargs={'engine': self})
+        except BaseException as e:
+            self.terminate_fatal(e)
+
+    def terminate_fatal(self, e):
+        self.__discord_webhook.notify_error('Sniff thread crashed!', e)
+        exit(-1)
+
+    def console_func(self):
 
         manager = self.__identity_manager
         event_manager = self.__event_manager
@@ -80,7 +99,7 @@ class Engine:
 
             elif command == 'dump':
                 manager.write_identities()
-                Logger.log('Dumped to identities.json')
+                print('Dumped to identities.json')
 
             elif command == 'ev':
                 if len(args) < 2:
@@ -95,18 +114,18 @@ class Engine:
                     print('This command requires more arguments.')
                     continue
                 if len(args) == 2:
-                    Logger.log(Adapter.arp_scan(args[1]))
+                    print(Adapter.arp_scan(args[1]))
                 elif len(args) == 3:
-                    Logger.log(Adapter.arp_scan(args[1], float(args[2])))
+                    print(Adapter.arp_scan(args[1], float(args[2])))
 
             elif command == 'netbios':
 
                 if len(args) < 2:
-                    Logger.log('This command requires more arguments.')
+                    print('This command requires more arguments.')
                     continue
 
                 Adapter.send_netbios_name_request(args[1])
-                Logger.log('Sent NetBIOS name request.')
+                print('Sent NetBIOS name request.')
 
             elif command == 'send':
                 if len(args) < 2:
@@ -114,17 +133,17 @@ class Engine:
                     continue
 
             else:
-                Logger.log(f'Unrecognized command: {command}')
+                print(f'Unrecognized command: {command}')
 
     def setup_discord_webhook(self):
 
-        bot = DiscordBot(os.getenv('WEBHOOK_URL'))
+        self.__discord_webhook = DiscordBot(os.getenv('WEBHOOK_URL'))
 
         try:
-            bot.launch()
-            self.__bots.append(bot)
+            self.__discord_webhook.launch()
+            print('Created discord webhook.')
         except Exception as e:
-            Logger.log(e.args[0])
+            print(e.args[0])
 
     def notify(self, name: str | None, ip: str | None, mac: str):
 
@@ -138,8 +157,7 @@ class Engine:
         if trigger is None:
             return
 
-        for bot in self.__bots:
-            bot.notify_activity(identity, trigger)
+        self.__discord_webhook.notify_activity(identity, trigger)
 
     def identity_manager(self) -> IdentityManager:
         return self.__identity_manager
