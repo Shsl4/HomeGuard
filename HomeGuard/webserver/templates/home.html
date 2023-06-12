@@ -65,5 +65,71 @@
 
     </div>
 
+        <div class="editOverlay">
+            <div class="main-view-edit">
+                <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%;">
+                    <div style="margin: 10pt;">
+                        <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Create Event</h2>
+                        <label class="secondary-text">Add a new event to send a notification</label>
+                    </div>
+                </div>
+    
+                <div style="display: flex; flex-direction: column; padding: 10pt; gap: 10pt; width: 100%; box-sizing: border-box">
+    
+                    <label class="basic-text" for="event-name">Event name</label>
+                    <input type="text" placeholder="Event" id="event-name" class="input-field basic-text">
+    
+                    <label class="basic-text" for="device-select">Device</label>
+                    <select id="device-select" class="input-field basic-text" onchange="">
+                        <option value="" selected disabled hidden>Select Device</option>
+                    </select>
+    
+                    <label class="basic-text" for="date-start">Start date</label>
+                    <input class="input-field" type="date" id="date-start" onchange="">
+    
+                    <label class="basic-text" for="date-end">End date</label>
+                    <input class="input-field" type="date" id="date-end" onchange="">
+    
+                    <label class="basic-text">Selected days</label>
+                    <div class="list-day-div">
+    
+                        <button class="day">M</button>
+                        <button class="day">T</button>
+                        <button class="day">W</button>
+                        <button class="day">T</button>
+                        <button class="day">F</button>
+                        <button class="day">S</button>
+                        <button class="day">S</button>
+    
+                    </div>
+    
+                    <div class="hour-input">
+    
+                        <div class="hour-div">
+                            <label class="basic-text" for="hour-start">Start hour</label>
+                            <input type="time" id="hour-start" class="input-field" onchange="">
+                        </div>
+    
+                        <div class="hour-div">
+                            <label class="basic-text" for="hour-end">End hour</label>
+                            <input type="time" id="hour-end" class="input-field" onchange="">
+                        </div>
+    
+                    </div>
+    
+                    <div class="submit-button-div">
+                        <button class="button-style basic-text" onclick="applyEditEvent()">Edit</button>
+                        
+                    </div>
+    
+    
+                </div>
+    
+            </div>
+            </div>
+        </div>
+
+    
 </body>
+
 </html>

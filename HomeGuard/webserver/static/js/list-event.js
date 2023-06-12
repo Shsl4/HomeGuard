@@ -3,6 +3,7 @@ function element(id){
 }
 
 let cached_devices = []
+let cached_events = []
 
 function deviceById(id){
 
@@ -26,6 +27,8 @@ function retrieveEvents(){
 
         let list = JSON.parse(this.responseText)
         let eventContainer = element('event-container')
+        
+        cached_events = list;
 
         for(let i = 0; i < list.length; ++i){
 
@@ -52,6 +55,8 @@ function retrieveEvents(){
             eventInfo.setAttribute('end', event.trigger.end_date);
             eventInfo.setAttribute('time', `${event.trigger.start_time} - ${event.trigger.end_time}`);
             eventInfo.setAttribute('button', 'Edit');
+            
+            eventInfo.setAttribute('button-index', i);
 
             eventContainer.appendChild(eventInfo);
 
@@ -87,6 +92,8 @@ function retrieveDevices(){
             deviceInfo.setAttribute('activity', device.last_activity);
             deviceInfo.setAttribute('uuid', device.uuid);
             deviceInfo.setAttribute('button', 'Manage');
+            
+            deviceInfo.setAttribute('button-index', i);
 
             deviceContainer.appendChild(deviceInfo);
 
@@ -100,6 +107,66 @@ function retrieveDevices(){
     request.send();
 
 }
+
+
+// Function to edit an event.
+
+function editEvent(index){
+    
+    const overlay = document.querySelector('.editOverlay');
+    const getEvents = document.querySelectorAll('.list-div');
+    const eventName = document.getElementById('event-name');
+    const selectName = document.getElementById('device-select');
+    const dateStart = document.getElementById('date-start');
+    const dateEnd = document.getElementById('date-end');
+    const hourStart = document.getElementById('hour-start');
+    const hourEnd = document.getElementById('hour-end');
+    const listButtonDiv = document.querySelector('.submit-button-div');
+
+    var nameEvent = getEvents[index + 1].getAttribute('name'); // + 1 because there is already a list-div that is not use for event.
+    var deviceName = getEvents[index + 1].getAttribute('devices');
+    var listDay = getEvents[index + 1].getAttribute('days').split(',');
+    var start = getEvents[index + 1].getAttribute('start').split('/');
+    var end = getEvents[index + 1].getAttribute('end').split('/');
+    var time = getEvents[index + 1].getAttribute('time').replace(' ', '').split('-');
+
+    // We set the values.
+
+
+    eventName.value = nameEvent;
+    selectName.value = deviceName;
+    dateStart.value = `${start[2]}-${start[1]}-${start[0]}`;
+    dateEnd.value = `${end[2]}-${end[1]}-${end[0]}`;
+    hourStart.value = time[0];
+    hourEnd.value = time[1].replace(' ', '');
+
+    const deleteButton = document.createElement('button');
+    deleteButton.innerHTML = "Delete";
+    deleteButton.classList.add('delete-button', 'button-style', 'basic-text');
+
+    // Function to delete the event. TODO.
+
+    deleteButton.addEventListener('click', function() {
+        console.log(`Event to delete is ${index}`);
+    });
+
+    listButtonDiv.appendChild(deleteButton);
+    
+    overlay.style.display = "flex";
+    overlay.setAttribute('is-active', 'true');
+}
+
+// Function to apply the modification from the event.
+
+function applyEditEvent(){
+    const overlay = document.querySelector('.editOverlay');
+
+    overlay.style.display = "none";
+    overlay.setAttribute('is-active', 'false');
+
+}
+
+
 
 class DeviceInfo extends HTMLElement {
     constructor() {
@@ -151,6 +218,8 @@ function generateListElementBody(elem, widths, attrs){
 
         elem.shadowRoot.append(div);
 
+
+
     }
 
     let div = document.createElement('div');
@@ -163,7 +232,8 @@ function generateListElementBody(elem, widths, attrs){
 
         button.textContent = elem.getAttribute('button');
         button.classList.add('button-style')
-        button.setAttribute('onclick',  elem.hasAttribute("onclick") ? elem.getAttribute("onclick") : "");
+        button.setAttribute('onclick',  elem.hasAttribute("onclick") ? elem.getAttribute("onclick") : `editEvent(${elem.getAttribute('button-index')})`);
+        button.setAttribute('index', elem.getAttribute('button-index'));
 
     }
 
