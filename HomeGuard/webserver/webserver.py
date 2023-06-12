@@ -2,6 +2,8 @@ import json
 import typing as t
 import uuid
 
+from pathlib import Path
+
 from flask import Flask, send_from_directory, jsonify
 from flask.json.provider import JSONProvider
 from waitress import serve
@@ -33,11 +35,11 @@ class WebServer:
     def register_routes(self):
         @self.__app.route('/')
         def hello():
-            return send_from_directory('templates/', 'home.html')
+            return send_from_directory(Path("templates/"), 'home.html')
 
         @self.__app.route('/<path:path>')
         def distribute_public(path):
-            return send_from_directory('static/', path)
+            return send_from_directory(Path("static/"), path)
 
         @self.__app.route('/event/<path:path>')
         def get_event(path):
@@ -89,4 +91,4 @@ class WebServer:
 
         @self.__app.route('/event_setup')
         def event_setup():
-            return send_from_directory('templates/', 'event_setup.html')
+            return send_from_directory(Path("templates/"), 'event_setup.html')
