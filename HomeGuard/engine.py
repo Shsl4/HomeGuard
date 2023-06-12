@@ -33,16 +33,6 @@ class Engine:
         self.__executor = ThreadPoolExecutor()
         self.__webserver = WebServer(self)
 
-        event: Event = self.__event_manager.event('Main')
-        trigger = event.get_trigger()
-
-        trigger.update_date_range(datetime.date(2023, 6, 1), datetime.date(2023, 6, 30))
-        trigger.update_time_range(datetime.time(0, 0), datetime.time(23, 59))
-        trigger.add_weekday(Weekdays.Tuesday)
-        trigger.add_weekday(Weekdays.Friday)
-        trigger.add_weekday(Weekdays.Sunday)
-
-        self.__event_manager.write_events()
 
     def run_scheduler(self):
 

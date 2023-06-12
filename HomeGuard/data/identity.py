@@ -22,7 +22,7 @@ class DeviceIdentity:
     def touch(self):
         self.last_activity = datetime.datetime.now()
 
-    def try_assign_netbios_name(self):
+    def try_assign_host_name(self):
 
         for ip in self.ip_addresses:
 
@@ -62,6 +62,24 @@ class DeviceIdentity:
     def make_identity(mac):
         return DeviceIdentity(mac, uuid.uuid4())
 
+    @classmethod
+    def parse(cls, data):
+
+        identity = DeviceIdentity(data['mac_address'], UUID(data['uuid']))
+
+        identity.display_name = data['display_name']
+        identity.ip_addresses = set(data['ip_addresses'])
+        identity.recognized_names = set(data['recognized_names'])
+
+        split = data['last_activity'].split(' ')
+
+        split_date = [int(x) for x in split[0].split('/')]
+        split_time = [int(x) for x in split[1].split(':')]
+
+        identity.last_activity = datetime.datetime(split_date[2], split_date[1], split_date[0], split_time[0], split_time[1])
+
+        return identity
+
 
 class IdentityEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -81,6 +99,7 @@ class IdentityEncoder(json.JSONEncoder):
 class IdentityManager:
     def __init__(self):
         self.__identities: list[DeviceIdentity] = []
+        self.parse_identities()
 
     def print(self):
 
@@ -120,7 +139,7 @@ class IdentityManager:
             return identity
 
         new_identity = DeviceIdentity.make_identity(mac).refresh(None, ip, mac)
-        new_identity.try_assign_netbios_name()
+        new_identity.try_assign_host_name()
 
         self.__identities.append(new_identity)
         self.write_identities()
@@ -142,3 +161,17 @@ class IdentityManager:
         for identity in self.__identities:
             if mac == identity.mac_address:
                 return identity.refresh(name, ip, mac)
+
+    def parse_identities(self):
+        try:
+            with open("identities.json", "r") as infile:
+                json_data = json.loads(infile.read())
+
+                for data in json_data:
+                    try:
+                        self.__identities.append(DeviceIdentity.parse(data))
+                    except BaseException:
+                        pass
+
+        except BaseException:
+            pass

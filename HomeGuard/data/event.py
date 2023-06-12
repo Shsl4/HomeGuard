@@ -3,7 +3,6 @@ import datetime
 import json
 import uuid
 from enum import Enum
-from json import JSONEncoder
 
 from HomeGuard.log.logger import Logger
 
@@ -17,6 +16,22 @@ class Event:
 
         # Represents the devices that triggered this event today.
         self.__triggered_devices: set[uuid.UUID] = set()
+
+    @classmethod
+    def parse(cls, data):
+
+        event = Event(data['name'])
+
+        for unique_id in data['ids']:
+
+            try:
+                event.__ids.add(uuid.UUID(unique_id))
+            except ValueError:
+                pass
+
+        event.__trigger = EventTrigger.parse(event, data['trigger'])
+
+        return event
 
     def to_json(self):
         return {
@@ -75,6 +90,31 @@ class EventTrigger:
         self.__end_time: datetime.time = datetime.time()
         self.__weekdays: set[Weekdays] = set()
         self.__event = event
+
+    @classmethod
+    def parse(cls, event, data):
+
+        trigger = EventTrigger(event)
+
+        split_start = [int(x) for x in data['start_date'].split('/')]
+        split_end = [int(x) for x in data['end_date'].split('/')]
+
+        split_start_time = [int(x) for x in data['start_time'].split(':')]
+        split_end_time = [int(x) for x in data['end_time'].split(':')]
+
+        start = datetime.date(split_start[2], split_start[1], split_start[0])
+        end = datetime.date(split_end[2], split_end[1], split_end[0])
+
+        start_time = datetime.time(split_start_time[0], split_start_time[1])
+        end_time = datetime.time(split_end_time[0], split_end_time[1])
+
+        trigger.update_time_range(start_time, end_time)
+        trigger.update_date_range(start, end)
+
+        for day in data['weekdays']:
+            trigger.add_weekday(Weekdays[day])
+
+        return trigger
 
     def to_json(self):
         return {
@@ -152,6 +192,7 @@ class EventManager:
 
     def __init__(self):
         self.__events: set[Event] = set()
+        self.parse_events()
 
     def reset_events(self):
         for event in self.__events:
@@ -195,3 +236,17 @@ class EventManager:
 
         with open("events.json", "w") as outfile:
             outfile.write(json_object.decode())
+
+    def parse_events(self):
+        try:
+            with open("events.json", "r") as infile:
+                json_data = json.loads(infile.read())
+
+                for data in json_data:
+                    try:
+                        self.__events.add(Event.parse(data))
+                    except BaseException:
+                        pass
+
+        except BaseException:
+            pass
