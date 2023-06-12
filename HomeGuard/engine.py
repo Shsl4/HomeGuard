@@ -84,56 +84,63 @@ class Engine:
         manager = self.__identity_manager
         event_manager = self.__event_manager
 
-        while True:
+        try:
+            while True:
 
-            inp = input()
+                inp = input()
 
-            if not inp:
-                continue
-
-            args = inp.split(' ')
-            command = args[0] if len(args) > 0 else 'None'
-
-            if command == 'ids':
-                manager.print()
-
-            elif command == 'dump':
-                manager.write_identities()
-                print('Dumped to identities.json')
-
-            elif command == 'ev':
-                if len(args) < 2:
-                    print('This command requires more arguments.')
+                if not inp:
                     continue
 
-                event_manager.event('Main').add_identity(uuid.UUID(args[1]))
-                event_manager.write_events()
+                args = inp.split(' ')
+                command = args[0] if len(args) > 0 else 'None'
 
-            elif command == 'arp':
-                if len(args) < 2:
-                    print('This command requires more arguments.')
-                    continue
-                if len(args) == 2:
-                    print(Adapter.arp_scan(args[1]))
-                elif len(args) == 3:
-                    print(Adapter.arp_scan(args[1], float(args[2])))
+                if command == 'ids':
+                    manager.print()
 
-            elif command == 'netbios':
+                elif command == 'dump':
+                    manager.write_identities()
+                    print('Dumped to identities.json')
 
-                if len(args) < 2:
-                    print('This command requires more arguments.')
-                    continue
+                elif command == 'ev':
+                    if len(args) < 2:
+                        print('This command requires more arguments.')
+                        continue
 
-                Adapter.send_netbios_name_request(args[1])
-                print('Sent NetBIOS name request.')
+                    event_manager.event('Main').add_identity(uuid.UUID(args[1]))
+                    event_manager.write_events()
 
-            elif command == 'send':
-                if len(args) < 2:
-                    print('This command requires more arguments.')
-                    continue
+                elif command == 'arp':
+                    if len(args) < 2:
+                        print('This command requires more arguments.')
+                        continue
+                    if len(args) == 2:
+                        print(Adapter.arp_scan(args[1]))
+                    elif len(args) == 3:
+                        print(Adapter.arp_scan(args[1], float(args[2])))
 
-            else:
-                print(f'Unrecognized command: {command}')
+                elif command == 'netbios':
+
+                    if len(args) < 2:
+                        print('This command requires more arguments.')
+                        continue
+
+                    Adapter.send_netbios_name_request(args[1])
+                    print('Sent NetBIOS name request.')
+
+                elif command == 'send':
+                    if len(args) < 2:
+                        print('This command requires more arguments.')
+                        continue
+
+                else:
+                    print(f'Unrecognized command: {command}')
+
+        except BaseException as e:
+
+            # Exit input thread on error.
+            print(f'Caught exception in input thread. {e}')
+            print('Exiting input thread.')
 
     def setup_discord_webhook(self):
 
