@@ -30,9 +30,24 @@
                 <input type="text" placeholder="Event" id="event-name" class="input-field basic-text">
 
                 <label class="basic-text" for="device-select">Device</label>
-                <select id="device-select" class="input-field basic-text" onchange="">
-                    <option value="" selected disabled hidden>Select Device</option>
-                </select>
+
+                <div style="display: flex; flex-direction: column; gap: 10pt">
+
+                    <div style="display: flex; flex-direction: row; gap: 10pt">
+
+                        <select onchange="deviceSelected()" style="width: 75%" id="device-select" class="input-field basic-text">
+                            <option value="" selected disabled hidden>Select Device</option>
+                        </select>
+
+                        <button style="width: 25%" class="button-style basic-text" onclick="addDevice()">Add</button>
+
+                    </div>
+
+                    <div id="devices-wrapper" class="selected-devices-wrapper">
+
+                    </div>
+
+                </div>
 
                 <label class="basic-text" for="date-start">Start date</label>
                 <input class="input-field" type="date" id="date-start" onchange="">
@@ -70,7 +85,6 @@
                 <div class="submit-button-div">
                     <button class="button-style basic-text" onclick="">Create</button>
                 </div>
-
 
             </div>
 

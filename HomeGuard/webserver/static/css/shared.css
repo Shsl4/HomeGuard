@@ -86,8 +86,11 @@ body{
     justify-content: center;
     align-items: center;
 
-    min-heignt: 300pt;
+    min-height: 300pt;
     min-width: 400pt;
+
+    max-height: 100%;
+    max-width: 400pt;
 
     background-color: white;
     border-radius: 8pt;
@@ -101,8 +104,6 @@ body{
     flex-direction: row;
     align-items: center;
     justify-content: center;
-
-    justify-content: space-between;
 
 }
 
@@ -184,6 +185,35 @@ body{
     align-items: center;
     gap: 5pt;
     margin: 5pt;
+
+}
+
+.selected-device-div{
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2pt;
+    background-color: var(--primary);
+    border-radius: 10pt;
+    padding: 5pt;
+
+}
+
+.selected-devices-wrapper{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 5pt;
+}
+
+.remove-device-button{
+
+    outline: 0;
+    border: 0;
+    background-color: transparent;
+    color: white;
 
 }
 
