@@ -1,3 +1,4 @@
+import datetime
 import os
 import threading
 import time
@@ -9,7 +10,7 @@ from scapy.config import conf
 from scapy.sendrecv import sniff
 
 from HomeGuard.bots.discord_bot import DiscordBot
-from HomeGuard.data.event import EventManager
+from HomeGuard.data.event import EventManager, Weekdays
 from HomeGuard.data.identity import IdentityManager
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.net.session import Session

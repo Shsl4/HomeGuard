@@ -103,11 +103,17 @@ class EventTrigger:
         split_start_time = [int(x) for x in data['start_time'].split(':')]
         split_end_time = [int(x) for x in data['end_time'].split(':')]
 
-        start = datetime.date(split_start[2], split_start[1], split_start[0])
-        end = datetime.date(split_end[2], split_end[1], split_end[0])
+        start = datetime.date(split_start[0], split_start[1], split_start[2])
+        end = datetime.date(split_end[0], split_end[1], split_end[2])
+
+        if end <= start:
+            raise RuntimeError('Invalid date range: The end date must be greater than the start date')
 
         start_time = datetime.time(split_start_time[0], split_start_time[1])
         end_time = datetime.time(split_end_time[0], split_end_time[1])
+
+        if end_time <= start_time:
+            raise RuntimeError('Invalid time range: The end time must be greater than the start time')
 
         trigger.update_time_range(start_time, end_time)
         trigger.update_date_range(start, end)
@@ -175,10 +181,9 @@ class EventEncoder(json.JSONEncoder):
         if isinstance(obj, EventTrigger):
             return obj.to_json()
         if isinstance(obj, datetime.datetime):
-            return '{0}/{1}/{2} {3}:{4}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2),
-                                                obj.year, str(obj.hour).zfill(2), str(obj.minute).zfill(2))
+            return '{0}/{1}/{2} {3}:{4}'.format(obj.year, str(obj.month).zfill(2), str(obj.day).zfill(2), str(obj.hour).zfill(2), str(obj.minute).zfill(2))
         if isinstance(obj, datetime.date):
-            return '{0}/{1}/{2}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2), obj.year)
+            return '{0}/{1}/{2}'.format(obj.year, str(obj.month).zfill(2), str(obj.day).zfill(2))
         if isinstance(obj, datetime.time):
             return '{0}:{1}'.format(str(obj.hour).zfill(2), str(obj.minute).zfill(2))
         if isinstance(obj, Weekdays):
@@ -216,6 +221,16 @@ class EventManager:
         self.__events.add(event)
         return event
 
+    def add_event(self, event: Event):
+
+        if self.event_exists(event.name()):
+            return False
+
+        self.__events.add(event)
+
+        return True
+
+
     def events(self):
         return self.__events
 
@@ -249,8 +264,8 @@ class EventManager:
                 for data in json_data:
                     try:
                         self.__events.add(Event.parse(data))
-                    except BaseException:
-                        pass
+                    except BaseException as e:
+                        print(f'Failed to parse Event!: {e}')
 
-        except BaseException:
-            pass
+        except BaseException as e:
+            print(f'Failed to open events data file: {e}')

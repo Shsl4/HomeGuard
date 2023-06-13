@@ -18,7 +18,10 @@ class DiscordBot(Bot):
         self.webhook: None | SyncWebhook = None
 
     def launch(self):
-        self.webhook = SyncWebhook.from_url(self.webhook_url, session=requests.Session())
+        if self.webhook_url:
+            self.webhook = SyncWebhook.from_url(self.webhook_url, session=requests.Session())
+        else:
+            raise RuntimeError('No discord webhook url found.')
 
     def notify_activity(self, identity: DeviceIdentity, trigger: EventTrigger):
 

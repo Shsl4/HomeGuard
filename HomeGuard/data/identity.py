@@ -78,7 +78,7 @@ class DeviceIdentity:
         split_date = [int(x) for x in split[0].split('/')]
         split_time = [int(x) for x in split[1].split(':')]
 
-        identity.last_activity = datetime.datetime(split_date[2], split_date[1], split_date[0], split_time[0], split_time[1])
+        identity.last_activity = datetime.datetime(split_date[0], split_date[1], split_date[2], split_time[0], split_time[1])
 
         return identity
 
@@ -92,8 +92,7 @@ class IdentityEncoder(json.JSONEncoder):
         if dataclasses.is_dataclass(obj):
             return dataclasses.asdict(obj)
         if isinstance(obj, datetime.datetime):
-            return '{0}/{1}/{2} {3}:{4}'.format(str(obj.day).zfill(2), str(obj.month).zfill(2),
-                                                obj.year, str(obj.hour).zfill(2), str(obj.minute).zfill(2))
+            return '{0}/{1}/{2} {3}:{4}'.format(obj.year, str(obj.month).zfill(2), str(obj.day).zfill(2), str(obj.hour).zfill(2), str(obj.minute).zfill(2))
 
         return json.JSONEncoder.default(self, obj)
 
@@ -178,8 +177,8 @@ class IdentityManager:
                 for data in json_data:
                     try:
                         self.__identities.append(DeviceIdentity.parse(data))
-                    except BaseException:
-                        pass
+                    except BaseException as e:
+                        print(f'Failed to parse DeviceIdentity!: {e}')
 
-        except BaseException:
-            pass
+        except BaseException as e:
+            print(f'Failed to open identities data file: {e}')

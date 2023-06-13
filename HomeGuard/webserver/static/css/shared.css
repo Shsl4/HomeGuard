@@ -83,14 +83,13 @@ body{
 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 
-    min-height: 300pt;
-    min-width: 400pt;
+    width: 400pt;
 
-    max-height: 100%;
-    max-width: 400pt;
+    height: 500pt;
+    min-height: 200pt;
 
     background-color: white;
     border-radius: 8pt;
@@ -176,6 +175,16 @@ body{
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
+
+}
+
+.input-div{
+
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10pt;
+
 }
 
 .hour-div{
@@ -184,7 +193,6 @@ body{
     flex-direction: column;
     align-items: center;
     gap: 5pt;
-    margin: 5pt;
 
 }
 

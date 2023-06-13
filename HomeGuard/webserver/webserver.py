@@ -2,11 +2,11 @@ import json
 import typing as t
 import uuid
 
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, request
 from flask.json.provider import JSONProvider
 from waitress import serve
 
-from HomeGuard.data.event import EventManager, EventEncoder
+from HomeGuard.data.event import EventManager, EventEncoder, Event
 from HomeGuard.data.identity import IdentityManager
 
 
@@ -28,7 +28,10 @@ class WebServer:
         self.register_routes()
 
     def run(self):
-        serve(self.__app, host='0.0.0.0', port=8080)
+        try:
+            serve(self.__app, host='0.0.0.0', port=8080)
+        except BaseException as e:
+            print(f'Webserver thread crashed! {e}')
 
     def register_routes(self):
         @self.__app.route('/')
@@ -90,3 +93,21 @@ class WebServer:
         @self.__app.route('/event_setup')
         def event_setup():
             return send_from_directory("templates/", 'event_setup.html')
+
+        @self.__app.route('/create_event', methods=['POST'])
+        def create_event():
+
+            data = request.json
+
+            try:
+                parsed_event = Event.parse(data)
+                result = self.__engine.event_manager().add_event(parsed_event)
+
+                self.__engine.event_manager().write_events()
+
+                return jsonify({"result": result})
+            except BaseException as e:
+                pass
+
+            return jsonify({"result": False})
+
