@@ -57,10 +57,6 @@ function retrieveEvents(){
             eventInfo.setAttribute('button', 'Edit');
             eventInfo.setAttribute('onclick', `editEvent(${i})`);
 
-            showCreateView();
-
-            eventInfo.setAttribute('button-index', i);
-
             eventContainer.appendChild(eventInfo);
 
         }
@@ -102,6 +98,7 @@ function retrieveDevices(){
 
         }
 
+        showCreateView();
         retrieveEvents()
 
     }
@@ -204,7 +201,6 @@ function showCreateView(){
 
     request.open("FETCH", "/event_setup");
     request.send();
-
 
 }
 
