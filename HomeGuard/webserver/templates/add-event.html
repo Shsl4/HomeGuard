@@ -2,7 +2,7 @@
 
     <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%;">
         <div style="margin: 10pt;">
-            <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Create Event</h2>
+            <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Add Event</h2>
             <label class="secondary-text">Add a new event to send a notification</label>
         </div>
     </div>
@@ -11,7 +11,7 @@
 
         <div class="input-div">
             <label class="basic-text" for="event-name">Event name</label>
-            <input type="text" placeholder="Event" id="event-name" class="input-field basic-text">
+            <input oninput="updateCreateButton()" type="text" placeholder="Event" id="event-name" class="input-field basic-text">
         </div>
 
         <div class="input-div">
@@ -43,14 +43,14 @@
             <div class="hour-div">
 
                 <label class="basic-text" for="date-start">Start date</label>
-                <input class="input-field" type="date" id="date-start">
+                <input class="input-field" type="date" id="date-start" onchange="updateCreateButton()">
 
             </div>
 
             <div class="hour-div">
 
                 <label class="basic-text" for="date-end">End date</label>
-                <input class="input-field" type="date" id="date-end">
+                <input class="input-field" type="date" id="date-end" onchange="updateCreateButton()">
 
             </div>
 
@@ -60,12 +60,12 @@
 
             <div class="hour-div">
                 <label class="basic-text" for="time-start">Start Hour</label>
-                <input type="time" id="time-start" class="input-field" onchange="">
+                <input type="time" id="time-start" class="input-field" onchange="updateCreateButton()">
             </div>
 
             <div class="hour-div">
                 <label class="basic-text" for="time-end">End Hour</label>
-                <input type="time" id="time-end" class="input-field" onchange="">
+                <input type="time" id="time-end" class="input-field" onchange="updateCreateButton()">
             </div>
 
         </div>
@@ -89,7 +89,7 @@
         </div>
 
         <div class="submit-button-div">
-            <button class="button-style basic-text" onclick="submitRequest()">Create</button>
+            <button disabled id="create-button" class="button-style basic-text" onclick="submitRequest()">Create</button>
         </div>
 
     </div>

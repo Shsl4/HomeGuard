@@ -153,6 +153,14 @@ body{
 
 }
 
+.button-style:disabled {
+
+    color: var(--secondary-background);
+    background-color: white;
+    transition: ease-in-out 0.1s;
+
+}
+
 .input-field{
 
     outline: 0;
@@ -281,19 +289,22 @@ body{
 
 .overlay {
 
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
     position: fixed;
-    
+
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
 
+    animation: ease-in-out 1s;
+
 }
+
 .main-view-edit{
     width: 30%;
 

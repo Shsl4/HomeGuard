@@ -1,11 +1,3 @@
-function element(id){
-    return document.getElementById(id);
-}
-
-function cssVariable(name){
-    return getComputedStyle(document.documentElement).getPropertyValue(name);
-}
-
 let selectedDeviceIndex = -1
 let selectedDevices = []
 let selectedDays = []
@@ -33,6 +25,9 @@ function addDevice(){
 
     }
 
+    updateCreateButton();
+    updateCreateButton();
+
 }
 
 function canSubmit(){
@@ -50,6 +45,20 @@ function canSubmit(){
     if(!element('time-end').value) return false;
 
     return selectedDays.length > 0;
+
+}
+
+function updateCreateButton(){
+
+    const button = element('create-button');
+
+    if(canSubmit()){
+        button.removeAttribute('disabled');
+    }
+    else{
+        button.setAttribute('disabled', '');
+    }
+
 
 }
 
@@ -82,10 +91,25 @@ function submitRequest() {
     console.log(jsonContent)
     console.log(JSON.stringify(jsonContent))
 
+    const button = element('create-button');
+
+    button.setAttribute('disabled', '');
+
     const request = new XMLHttpRequest();
 
     request.onload = function() {
-        console.log(this.responseText)
+
+        const jsonResponse = JSON.parse(this.responseText);
+
+        if(jsonResponse.result === true){
+
+            closeOverlay();
+            retrieveEvents();
+
+        }
+
+        console.log(jsonResponse)
+
     }
 
     request.open("POST", "/create_event");
@@ -94,7 +118,7 @@ function submitRequest() {
 
 }
 
-function onCreateEvent(){
+function onAddViewLoaded(){
 
     element('event-name').value = '';
     element('date-start').value = '';
@@ -133,63 +157,10 @@ function onCreateEvent(){
                 selectedDays.push(day.getAttribute('id'));
             }
 
+            updateCreateButton();
+
         });
 
     });
 
 }
-
-class DeviceSelectButton extends HTMLElement {
-
-    label = null
-    id = null
-
-    constructor() {
-        super();
-    }
-
-    connectedCallback(){
-
-        this.attachShadow({ mode: "open" });
-
-        let div = document.createElement('div');
-
-        div.setAttribute('class', 'basic-text selected-device-div');
-
-        this.label = div.appendChild(document.createElement('label'));
-
-        this.label.textContent = this.getAttribute('name');
-        this.label.setAttribute('style', 'color: white');
-
-        let button = div.appendChild(document.createElement('button'));
-
-        button.setAttribute('class', 'remove-device-button');
-        button.onclick = () => {
-
-            let index = selectedDevices.indexOf(this.id);
-
-            if (index !== -1) {
-                selectedDevices.splice(index, 1);
-            }
-
-            this.remove();
-
-        };
-        button.textContent = 'X'
-
-        const linkElem = document.createElement('link');
-        linkElem.setAttribute('rel', 'stylesheet');
-        linkElem.setAttribute('href', 'css/shared.css');
-
-        this.shadowRoot.append(div, linkElem);
-
-    }
-
-    setNameAndId(name, id){
-        this.label.textContent = name;
-        this.id = id;
-    }
-
-}
-
-customElements.define("device-select-button", DeviceSelectButton);

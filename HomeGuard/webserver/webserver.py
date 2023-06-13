@@ -90,9 +90,9 @@ class WebServer:
             manager: IdentityManager = self.__engine.identity_manager()
             return jsonify(manager.identities())
 
-        @self.__app.route('/event_setup', methods=['FETCH'])
+        @self.__app.route('/add-event-view', methods=['FETCH'])
         def event_setup():
-            return send_from_directory("templates/", 'event_setup.html')
+            return send_from_directory("templates/", 'add-event.html')
 
         @self.__app.route('/create_event', methods=['POST'])
         def create_event():

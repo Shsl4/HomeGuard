@@ -56,7 +56,7 @@ class DiscordBot(Bot):
             embed.add_field(name='Description', value=message)
             embed.add_field(name='Exception', value=f'{type(exception).__name__}: {exception}', inline=False)
 
-            self.webhook.send(username='HomeGuard', embed=embed)
-
-
-
+            try:
+                self.webhook.send(username='HomeGuard', embed=embed)
+            except BaseException as e:
+                print(f'Unable to send discord message! {e}')
