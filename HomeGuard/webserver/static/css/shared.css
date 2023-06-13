@@ -279,8 +279,9 @@ body{
 
 }
 
-.editOverlay{
-    display: none;
+.overlay {
+
+    display: flex;
     align-items: center;
     justify-content: center;
     position: fixed;
@@ -290,7 +291,8 @@ body{
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
-    z-index: 1000;
+    z-index: 1;
+
 }
 .main-view-edit{
     width: 30%;

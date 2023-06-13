@@ -90,7 +90,7 @@ class WebServer:
             manager: IdentityManager = self.__engine.identity_manager()
             return jsonify(manager.identities())
 
-        @self.__app.route('/event_setup')
+        @self.__app.route('/event_setup', methods=['FETCH'])
         def event_setup():
             return send_from_directory("templates/", 'event_setup.html')
 
@@ -100,14 +100,26 @@ class WebServer:
             data = request.json
 
             try:
+
                 parsed_event = Event.parse(data)
                 result = self.__engine.event_manager().add_event(parsed_event)
 
+                if result is not True:
+                    raise RuntimeError(f'The event named {parsed_event.name()} already exists.')
+
                 self.__engine.event_manager().write_events()
 
-                return jsonify({"result": result})
-            except BaseException as e:
-                pass
+                return jsonify({
+                    "result": True,
+                    "status": f"Created and registered event {parsed_event.name()}"
+                })
 
-            return jsonify({"result": False})
+            except BaseException as e:
+
+                return jsonify({
+                        "result": False,
+                        "status": str(e)
+                    })
+
+
 

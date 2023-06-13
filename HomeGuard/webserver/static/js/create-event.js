@@ -10,35 +10,6 @@ let selectedDeviceIndex = -1
 let selectedDevices = []
 let selectedDays = []
 
-let cached_devices = []
-const dayButtons = document.querySelectorAll('.day');
-
-function retrieveDevices(){
-
-    const request = new XMLHttpRequest();
-
-    request.onload = function() {
-
-        cached_devices = JSON.parse(this.responseText)
-
-        for(let i = 0; i < cached_devices.length; ++i){
-
-            let select = element('device-select');
-
-            let option = select.appendChild(document.createElement('option'))
-            let device = cached_devices[i];
-
-            option.textContent = `${device.display_name} (${device.mac_address})`
-
-        }
-
-    }
-
-    request.open("GET", "/devices");
-    request.send();
-
-}
-
 function deviceSelected(){
 
     let select = element('device-select');
@@ -123,6 +94,51 @@ function submitRequest() {
 
 }
 
+function onCreateEvent(){
+
+    element('event-name').value = '';
+    element('date-start').value = '';
+    element('date-end').value = '';
+    element('time-start').value = '';
+    element('time-end').value = '';
+    element('device-select').selectedIndex = 0;
+
+    selectedDevices = [];
+    selectedDeviceIndex = [];
+    selectedDays = [];
+
+    for(let i = 0; i < cached_devices.length; ++i){
+
+        let select = element('device-select');
+
+        let option = select.appendChild(document.createElement('option'))
+        let device = cached_devices[i];
+
+        option.textContent = `${device.display_name} (${device.mac_address})`
+
+    }
+
+    const dayButtons = document.querySelectorAll('.day');
+
+    dayButtons.forEach(function(day, index){
+
+        day.addEventListener("click", function(){
+
+            if(day.classList.contains('day-selected')){
+                day.classList.remove('day-selected');
+                selectedDays.splice(selectedDays.indexOf(day.getAttribute('id')), 1);
+            }
+            else{
+                day.classList.add('day-selected');
+                selectedDays.push(day.getAttribute('id'));
+            }
+
+        });
+
+    });
+
+}
+
 class DeviceSelectButton extends HTMLElement {
 
     label = null
@@ -177,38 +193,3 @@ class DeviceSelectButton extends HTMLElement {
 }
 
 customElements.define("device-select-button", DeviceSelectButton);
-
-dayButtons.forEach(function(day, index){
-
-    day.addEventListener("click", function(){
-
-        if(day.classList.contains('day-selected')){
-            day.classList.remove('day-selected');
-            selectedDays.splice(selectedDays.indexOf(day.getAttribute('id')), 1);
-        }
-        else{
-            day.classList.add('day-selected');
-            selectedDays.push(day.getAttribute('id'));
-        }
-
-    });
-
-});
-
-window.addEventListener("load", (event) => {
-
-    element('event-name').value = '';
-    element('date-start').value = '';
-    element('date-end').value = '';
-    element('time-start').value = '';
-    element('time-end').value = '';
-    element('device-select').selectedIndex = 0;
-
-    selectedDevices = [];
-    selectedDeviceIndex = [];
-    selectedDays = [];
-    cached_devices = [];
-
-    retrieveDevices();
-
-});

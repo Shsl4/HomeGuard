@@ -1,118 +1,97 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv='cache-control' content='no-cache'>
-    <meta http-equiv='expires' content='0'>
-    <meta http-equiv='pragma' content='no-cache'>
-    <title>Title</title>
-    <link rel="stylesheet" href="css/shared.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <script src="https://kit.fontawesome.com/a345e0e583.js" crossorigin="anonymous"></script>
-</head>
+<div class="add-event-section">
 
-    <div class="main-view">
+    <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%;">
+        <div style="margin: 10pt;">
+            <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Create Event</h2>
+            <label class="secondary-text">Add a new event to send a notification</label>
+        </div>
+    </div>
 
-        <div class="add-event-section">
+    <div style="display: flex; flex-direction: column; justify-content: flex-start; padding: 10pt; gap: 20pt; width: 100%; height: 100%; box-sizing: border-box; overflow: scroll;">
 
-            <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%;">
-                <div style="margin: 10pt;">
-                    <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Create Event</h2>
-                    <label class="secondary-text">Add a new event to send a notification</label>
-                </div>
-            </div>
+        <div class="input-div">
+            <label class="basic-text" for="event-name">Event name</label>
+            <input type="text" placeholder="Event" id="event-name" class="input-field basic-text">
+        </div>
 
-            <div style="display: flex; flex-direction: column; justify-content: flex-start; padding: 10pt; gap: 20pt; width: 100%; height: 100%; box-sizing: border-box; overflow: scroll;">
+        <div class="input-div">
 
-                <div class="input-div">
-                    <label class="basic-text" for="event-name">Event name</label>
-                    <input type="text" placeholder="Event" id="event-name" class="input-field basic-text">
-                </div>
+            <label class="basic-text" for="device-select">Device</label>
+            <div style="display: flex; flex-direction: column; gap: 10pt">
 
-                <div class="input-div">
+                <div style="display: flex; flex-direction: row; gap: 10pt">
 
-                    <label class="basic-text" for="device-select">Device</label>
-                    <div style="display: flex; flex-direction: column; gap: 10pt">
+                    <select onchange="deviceSelected()" style="width: 75%" id="device-select"
+                            class="input-field basic-text">
+                        <option value="" selected disabled hidden>Select Device</option>
+                    </select>
 
-                        <div style="display: flex; flex-direction: row; gap: 10pt">
-
-                            <select onchange="deviceSelected()" style="width: 75%" id="device-select" class="input-field basic-text">
-                                <option value="" selected disabled hidden>Select Device</option>
-                            </select>
-
-                            <button style="width: 25%" class="button-style basic-text" onclick="addDevice()">Add</button>
-
-                        </div>
-
-                        <div id="devices-wrapper" class="selected-devices-wrapper">
-
-                        </div>
-
-                    </div>
+                    <button style="width: 25%" class="button-style basic-text" onclick="addDevice()">Add</button>
 
                 </div>
 
-                <div class="hour-input">
+                <div id="devices-wrapper" class="selected-devices-wrapper">
 
-                    <div class="hour-div">
-
-                        <label class="basic-text" for="date-start">Start date</label>
-                        <input class="input-field" type="date" id="date-start">
-
-                    </div>
-
-                    <div class="hour-div">
-
-                        <label class="basic-text" for="date-end">End date</label>
-                        <input class="input-field" type="date" id="date-end">
-
-                    </div>
-
-                </div>
-
-                <div class="hour-input">
-
-                    <div class="hour-div">
-                        <label class="basic-text" for="time-start">Start Hour</label>
-                        <input type="time" id="time-start" class="input-field" onchange="">
-                    </div>
-
-                    <div class="hour-div">
-                        <label class="basic-text" for="time-end">End Hour</label>
-                        <input type="time" id="time-end" class="input-field" onchange="">
-                    </div>
-
-                </div>
-
-                <div class="input-div">
-
-                    <label class="basic-text">Selected days</label>
-
-                    <div class="list-day-div">
-
-                        <button id="Monday" class="day">M</button>
-                        <button id="Tuesday" class="day">T</button>
-                        <button id="Wednesday" class="day">W</button>
-                        <button id="Thursday" class="day">T</button>
-                        <button id="Friday" class="day">F</button>
-                        <button id="Saturday" class="day">S</button>
-                        <button id="Sunday" class="day">S</button>
-
-                    </div>
-
-                </div>
-
-                <div class="submit-button-div">
-                    <button class="button-style basic-text" onclick="submitRequest()">Create</button>
                 </div>
 
             </div>
 
         </div>
 
+        <div class="hour-input">
+
+            <div class="hour-div">
+
+                <label class="basic-text" for="date-start">Start date</label>
+                <input class="input-field" type="date" id="date-start">
+
+            </div>
+
+            <div class="hour-div">
+
+                <label class="basic-text" for="date-end">End date</label>
+                <input class="input-field" type="date" id="date-end">
+
+            </div>
+
+        </div>
+
+        <div class="hour-input">
+
+            <div class="hour-div">
+                <label class="basic-text" for="time-start">Start Hour</label>
+                <input type="time" id="time-start" class="input-field" onchange="">
+            </div>
+
+            <div class="hour-div">
+                <label class="basic-text" for="time-end">End Hour</label>
+                <input type="time" id="time-end" class="input-field" onchange="">
+            </div>
+
+        </div>
+
+        <div class="input-div">
+
+            <label class="basic-text">Selected days</label>
+
+            <div class="list-day-div">
+
+                <button id="Monday" class="day">M</button>
+                <button id="Tuesday" class="day">T</button>
+                <button id="Wednesday" class="day">W</button>
+                <button id="Thursday" class="day">T</button>
+                <button id="Friday" class="day">F</button>
+                <button id="Saturday" class="day">S</button>
+                <button id="Sunday" class="day">S</button>
+
+            </div>
+
+        </div>
+
+        <div class="submit-button-div">
+            <button class="button-style basic-text" onclick="submitRequest()">Create</button>
+        </div>
 
     </div>
 
-</body>
-<script src="js/create-event.js"></script>
-</html>
+</div>

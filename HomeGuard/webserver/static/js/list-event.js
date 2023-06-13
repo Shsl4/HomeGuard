@@ -27,7 +27,7 @@ function retrieveEvents(){
 
         let list = JSON.parse(this.responseText)
         let eventContainer = element('event-container')
-        
+
         cached_events = list;
 
         for(let i = 0; i < list.length; ++i){
@@ -56,9 +56,9 @@ function retrieveEvents(){
             eventInfo.setAttribute('time', `${event.trigger.start_time} - ${event.trigger.end_time}`);
             eventInfo.setAttribute('button', 'Edit');
             eventInfo.setAttribute('onclick', `editEvent(${i})`);
-            
-        
-            
+
+            showCreateView();
+
             eventInfo.setAttribute('button-index', i);
 
             eventContainer.appendChild(eventInfo);
@@ -95,7 +95,7 @@ function retrieveDevices(){
             deviceInfo.setAttribute('activity', device.last_activity);
             deviceInfo.setAttribute('uuid', device.uuid);
             deviceInfo.setAttribute('button', 'Manage');
-            
+
             deviceInfo.setAttribute('button-index', i);
 
             deviceContainer.appendChild(deviceInfo);
@@ -110,89 +110,6 @@ function retrieveDevices(){
     request.send();
 
 }
-
-
-// Function to edit an event.
-
-function editEvent(index){
-    
-    const overlay = document.querySelector('.editOverlay');
-    const eventName = element('event-name');
-    const selectName = element('device-select');
-    const dateStart = element('date-start');
-    const dateEnd = element('date-end');
-    const hourStart = element('hour-start');
-    const hourEnd = element('hour-end');
-    const listButtonDiv = element('submit-div');
-
-    let event = cached_events[index];
-
-    let deviceNames = []
-
-    for(var j = 0; j < event.ids.length; ++j){
-
-        let device = deviceById(event.ids[j]);
-
-        if(device != null){
-            deviceNames.push(device.display_name);
-        }
-
-    }
-    
-    // We set the values.
-
-
-    eventName.value = event.name;
-    selectName.value = deviceNames[0];
-    dateStart.value = event.trigger.start_date;
-    dateEnd.value = event.trigger.end_date;
-    hourStart.value = event.trigger.start_time;
-    hourEnd.value = event.trigger.end_time;
-
-    
-    const deleteButton = document.createElement('button');
-    deleteButton.innerHTML = "Delete";
-    deleteButton.classList.add('delete-button', 'button-style', 'basic-text');
-
-    // Function to delete the event. TODO.
-
-    deleteButton.addEventListener('click', function() {
-        console.log(`Event to delete is ${index}`);
-    });
-    const existingDeleteButton = listButtonDiv.querySelector('.delete-button');
-    if (!existingDeleteButton) {
-        const deleteButton = document.createElement('button');
-        deleteButton.innerHTML = "Delete";
-        deleteButton.classList.add('delete-button', 'button-style', 'basic-text');
-
-        // Function to delete the event. TODO.
-        deleteButton.addEventListener('click', function() {
-            console.log(`Event to delete is ${index}`);
-        });
-
-        listButtonDiv.appendChild(deleteButton);
-    } else {
-        existingDeleteButton.addEventListener('click', function() {
-            console.log(`Event to delete is ${index}`);
-        });
-    }
-    
-    
-    overlay.style.display = "flex";
-    overlay.setAttribute('is-active', 'true');
-}
-
-// Function to apply the modification from the event.
-
-function applyEditEvent(){
-    const overlay = document.querySelector('.editOverlay');
-
-    overlay.style.display = "none";
-    overlay.setAttribute('is-active', 'false');
-
-}
-
-
 
 class DeviceInfo extends HTMLElement {
     constructor() {
@@ -271,7 +188,42 @@ function generateListElementBody(elem, widths, attrs){
 
 }
 
+function showCreateView(){
+
+    const request = new XMLHttpRequest();
+
+    request.onload = function() {
+
+        const overlay = element('create-overlay');
+
+        overlay.innerHTML = this.responseText;
+
+        onCreateEvent();
+
+    }
+
+    request.open("FETCH", "/event_setup");
+    request.send();
+
+
+}
+
 customElements.define("event-info", EventInfo);
 customElements.define("device-info", DeviceInfo);
 
-retrieveDevices()
+window.addEventListener("load", (event) => {
+
+    retrieveDevices();
+
+    const overlay = document.getElementById('create-overlay');
+
+    overlay.addEventListener('click', function(e) {
+
+        if(e.target === overlay){
+            overlay.innerHTML = '';
+            overlay.style.display = 'none';
+        }
+
+    });
+
+});
