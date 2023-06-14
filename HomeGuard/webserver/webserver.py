@@ -7,7 +7,7 @@ from flask.json.provider import JSONProvider
 from waitress import serve
 
 from HomeGuard.data.event import EventManager, EventEncoder, Event
-from HomeGuard.data.identity import IdentityManager
+from HomeGuard.data.identity import IdentityManager, DeviceIdentity
 
 
 class FlaskJSONProvider(JSONProvider):
@@ -90,9 +90,13 @@ class WebServer:
             manager: IdentityManager = self.__engine.identity_manager()
             return jsonify(manager.identities())
 
-        @self.__app.route('/add-event-view', methods=['FETCH'])
+        @self.__app.route('/webhook-status')
+        def webhook_status():
+            return jsonify({"result": self.__engine.discord_webhook_status()})
+
+        @self.__app.route('/event-view', methods=['FETCH'])
         def event_setup():
-            return send_from_directory("templates/", 'add-event.html')
+            return send_from_directory("templates/", 'event-view.html')
 
         @self.__app.route('/create_event', methods=['POST'])
         def create_event():
@@ -115,11 +119,107 @@ class WebServer:
                 })
 
             except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/edit-event', methods=['POST'])
+        def edit_event():
+
+            data = request.json
+
+            try:
+
+                parsed_event = Event.parse(data)
+                self.__engine.event_manager().event(data['old_name']).replace_with(parsed_event)
+                self.__engine.event_manager().write_events()
 
                 return jsonify({
-                        "result": False,
-                        "status": str(e)
-                    })
+                    "result": True,
+                    "status": f"Edited event {data['old_name']}"
+                })
+
+            except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/edit-device', methods=['POST'])
+        def edit_device():
+
+            data = request.json
+
+            try:
+
+                identity: DeviceIdentity = self.__engine.identity_manager().identity_by_id(uuid.UUID(data['uuid']))
+
+                if identity is None:
+                    raise RuntimeError(f'Error: {data["uuid"]} is not a valid device id.')
+
+                identity.display_name = data['display_name']
+                identity.mac_address = data['mac_address']
+                identity.ip_addresses = set(data['ip_addresses'])
+
+                self.__engine.identity_manager().write_identities()
+
+                return jsonify({
+                    "result": True,
+                    "status": f"Edited device {data['display_name']}"
+                })
+
+            except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/forget-device', methods=['POST'])
+        def forget_device():
+
+            data = request.json
+
+            try:
+                if self.__engine.forget_device(uuid.UUID(data['uuid'])) is False:
+                    raise RuntimeError(f'Error: {data["uuid"]} is not a valid device id.')
+
+                return jsonify({
+                    "result": True,
+                    "status": f"Forgotten device with id {data['uuid']}"
+                })
+
+            except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/delete-event', methods=['POST'])
+        def delete_event():
+
+            data = request.json
+
+            try:
+                if self.__engine.delete_event(data['name']) is False:
+                    raise RuntimeError(f'Error: {data["name"]} is not a valid event.')
+
+                return jsonify({
+                    "result": True,
+                    "status": f"Deleted event {data['name']}"
+                })
+
+            except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/update-webhook', methods=['POST'])
+        def update_discord_webhook():
+
+            data = request.json
+
+            try:
+                if self.__engine.reopen_discord_webhook(data['webhook_url']) is False:
+                    raise RuntimeError(f'Error: {data["webhook_url"]} is not a valid webhook url.')
+
+                return jsonify({
+                    "result": True,
+                    "status": f"Setup new webhook url."
+                })
+
+            except BaseException as e:
+                return jsonify({"result": False, "status": str(e)})
+
+        @self.__app.route('/device-view', methods=['FETCH'])
+        def device_view():
+            return send_from_directory("templates/", 'device-view.html')
 
 
 

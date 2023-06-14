@@ -65,11 +65,33 @@ class Event:
     def add_identity(self, device_id: uuid):
         self.__ids.add(device_id)
 
+    def replace_with(self, event):
+
+        self.__name = event.__name
+        self.__ids = set()
+
+        for device_id in event.__ids:
+            self.__ids.add(uuid.UUID(str(device_id)))
+
+        self.__trigger: EventTrigger = EventTrigger(self)
+
+        self.__trigger.update_time_range(event.__trigger.start_time(), event.__trigger.end_time())
+        self.__trigger.update_date_range(event.__trigger.start_date(), event.__trigger.end_date())
+
+        for day in event.__trigger.weekdays():
+            self.__trigger.add_weekday(day)
+
     def name(self):
         return self.__name
 
     def get_trigger(self):
         return self.__trigger
+
+    def remove_identity(self, device_id):
+        try:
+            self.__ids.remove(device_id)
+        except KeyError:
+            pass
 
 
 class Weekdays(Enum):
@@ -123,6 +145,18 @@ class EventTrigger:
 
         return trigger
 
+    def start_time(self):
+        return self.__start_time
+
+    def end_time(self):
+        return self.__end_time
+
+    def start_date(self):
+        return self.__start_date
+
+    def end_date(self):
+        return self.__end_date
+
     def to_json(self):
         return {
             'start_date': self.__start_date,
@@ -161,6 +195,9 @@ class EventTrigger:
         self.__end_time = end
 
         return True
+
+    def weekdays(self):
+        return set(self.__weekdays)
 
     def add_weekday(self, day: Weekdays):
         return self.__weekdays.add(day)
@@ -230,7 +267,6 @@ class EventManager:
 
         return True
 
-
     def events(self):
         return self.__events
 
@@ -269,3 +305,13 @@ class EventManager:
 
         except BaseException as e:
             print(f'Failed to open events data file: {e}')
+
+    def delete(self, name):
+
+        for event in self.__events:
+            if event.name() == name:
+                self.__events.remove(event)
+                self.write_events()
+                return True
+
+        return False

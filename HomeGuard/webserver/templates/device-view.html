@@ -1,0 +1,75 @@
+<div class="device-section">
+
+    <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%;">
+        <div style="margin: 10pt;">
+            <h2 id='view-title' style="margin-top: 2pt; margin-bottom: 2pt;">Event view</h2>
+            <label id="view-description" class="secondary-text">Replace this description in code</label>
+        </div>
+    </div>
+
+    <div class="device-scroller">
+
+        <div class="device-tab-div">
+
+            <div class="input-div">
+                <label class="basic-text" for="device-name">Device name</label>
+                <input oninput="updateSubmitDeviceButton()" type="text" placeholder="Device name" id="device-name" class="input-field basic-text">
+            </div>
+
+
+            <div class="input-div">
+                <label class="basic-text" for="mac-input">MAC address</label>
+                <input pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$" oninput="updateSubmitDeviceButton()"
+                       type="text" placeholder="MAC address" id="mac-input" class="input-field basic-text">
+            </div>
+
+            <div class="input-div">
+
+                <label class="basic-text" for="ip-input">IP address</label>
+                <div style="display: flex; flex-direction: column; gap: 10pt">
+
+                    <div style="display: flex; flex-direction: row; gap: 10pt">
+
+                        <input type="text" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$" oninput="checkIpField()" style="width: 75%" id="ip-input" placeholder="Add IP address"
+                               class="input-field basic-text">
+
+                        <button disabled id='ip-button' style="width: 25%" class="button-style basic-text" onclick="addIp()">Add</button>
+
+                    </div>
+
+                    <div id="ip-wrapper" class="selected-devices-wrapper">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="submit-button-div">
+                <button disabled id="submit-button" class="button-style basic-text">Change Me</button>
+                <button style="color: red" id="forget-button" class="button-style basic-text">Forget</button>
+            </div>
+
+        </div>
+
+        <div class="device-tab-div">
+
+            <div class="input-div" id="recognized-names">
+                <label class="basic-text">Identified names:</label>
+            </div>
+
+            <div class="input-div">
+                <label class="basic-text">UUID:</label>
+                <label class="secondary-text" id="uuid-label"></label>
+            </div>
+
+            <div class="input-div">
+                <label class="basic-text">Last activity:</label>
+                <label class="secondary-text" id="activity-label"></label>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

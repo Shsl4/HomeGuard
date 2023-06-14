@@ -2,22 +2,82 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>HomeGuard Panel</title>
     <link rel="stylesheet" href="css/shared.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
-    <script src="https://kit.fontawesome.com/a345e0e583.js" crossorigin="anonymous"></script>
     <script src="js/loader.js"></script>
     <script src="js/home.js"></script>
     <script src="js/components.js"></script>
     <script src="js/add-event.js"></script>
+    <script src="js/edit-event.js"></script>
+    <script src="js/edit-device.js"></script>
 </head>
 <body>
 
-    <div class="navbar">
+<div class="main-view">
+
+    <div>
+        <label class="basic-text" style="color: var(--primary); font-size: 35pt">HomeGuard Panel</label>
+    </div>
+
+    <div class="main-data">
+        <div class="status-div">
+
+        <div class="small-section">
+
+            <div class="basic-text" style="border-bottom: solid var(--border) 2pt; width: 100%">
+                <div style="margin: 10pt;">
+                    <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Status</h2>
+                    <label class="secondary-text">Monitor the app status here</label>
+                </div>
+            </div>
+
+            <div class="status-data">
+
+                <label id="info-devices" class="basic-text">Identified devices: 0</label>
+                <label id="info-events" class="basic-text">Registered events: 0</label>
+
+            </div>
+
+
+            <div class="basic-text" style="border-bottom: solid var(--border) 2pt; border-top: solid var(--border) 2pt; width: 100%">
+                <div style="margin: 10pt;">
+                    <h2 style="margin-top: 2pt; margin-bottom: 2pt;">Discord Webhook</h2>
+                    <label class="secondary-text">Monitor the Discord webhook status here</label>
+                </div>
+            </div>
+
+            <div class="status-data">
+
+                <div class="input-div">
+
+                    <label id='webhook-status' class="basic-text">Webhook status: Offline</label>
+
+                    <label class="basic-text" for="discord-webhook">Update Discord webhook:</label>
+                    <div style="display: flex; flex-direction: column; gap: 10pt">
+
+                        <div style="display: flex; flex-direction: row; gap: 10pt">
+
+                            <input style="width: 75%" id="discord-webhook" placeholder="Webhook URL"
+                                   class="input-field basic-text">
+
+                            <button id='submit-webhook' style="width: 25%" class="button-style basic-text" onclick="sendWebhook()">Send</button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+        </div>
 
     </div>
 
-    <div class="main-view">
+    <div class="management-div">
 
         <div class="section">
 
@@ -53,10 +113,10 @@
             </div>
 
             <device-info class="list-div event-list-category-text"
-                        name="Name"
-                        ip="Last IP"
-                        mac="MAC Address"
-                        activity="Last activity">
+                         name="Name"
+                         ip="Last IP"
+                         mac="MAC Address"
+                         activity="Last activity">
             </device-info>
 
             <div id="device-container" class="event-container">
@@ -66,12 +126,19 @@
         </div>
 
     </div>
+    </div>
 
-        <div id='overlay' class="overlay">
+</div>
 
-        </div>
+<div id='overlay' class="overlay">
 
-    
+</div>
+
+<div id='message-overlay' class="message-overlay">
+
+</div>
+
+
 </body>
 
 </html>

@@ -1,7 +1,3 @@
-let selectedDeviceIndex = -1
-let selectedDevices = []
-let selectedDays = []
-
 function deviceSelected(){
 
     let select = element('device-select');
@@ -21,16 +17,30 @@ function addDevice(){
 
         let button = div.appendChild(document.createElement('device-select-button'));
         button.setNameAndId(device.display_name, device.uuid);
+
+        button.setClickEvent(() => {
+
+            let index = selectedDevices.indexOf(button.id);
+
+            if (index !== -1) {
+                selectedDevices.splice(index, 1);
+            }
+
+            updateSubmitEventButton();
+
+            button.remove();
+
+        });
+
         selectedDevices.push(device.uuid)
 
     }
 
-    updateCreateButton();
-    updateCreateButton();
+    updateSubmitEventButton();
 
 }
 
-function canSubmit(){
+function canSubmitEvent(){
 
     if(!element('event-name').value) return false;
 
@@ -48,11 +58,11 @@ function canSubmit(){
 
 }
 
-function updateCreateButton(){
+function updateSubmitEventButton(){
 
-    const button = element('create-button');
+    const button = element('submit-button');
 
-    if(canSubmit()){
+    if(canSubmitEvent()){
         button.removeAttribute('disabled');
     }
     else{
@@ -62,9 +72,9 @@ function updateCreateButton(){
 
 }
 
-function submitRequest() {
+function submitAddRequest() {
 
-    if (!canSubmit()) return;
+    if (!canSubmitEvent()) return;
 
     const name = element('event-name').value
 
@@ -88,10 +98,7 @@ function submitRequest() {
 
     }
 
-    console.log(jsonContent)
-    console.log(JSON.stringify(jsonContent))
-
-    const button = element('create-button');
+    const button = element('submit-button');
 
     button.setAttribute('disabled', '');
 
@@ -108,13 +115,33 @@ function submitRequest() {
 
         }
 
-        console.log(jsonResponse)
+        showNotification(jsonResponse.result, jsonResponse.status);
 
     }
 
     request.open("POST", "/create_event");
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify(jsonContent));
+
+}
+
+function fetchAndShowAddView(){
+
+    const request = new XMLHttpRequest();
+
+    request.onload = function() {
+
+        const overlay = element('overlay');
+
+        overlay.innerHTML = this.responseText;
+
+        onAddViewLoaded();
+        showOverlay();
+
+    }
+
+    request.open("FETCH", "/event-view");
+    request.send();
 
 }
 
@@ -126,6 +153,9 @@ function onAddViewLoaded(){
     element('time-start').value = '';
     element('time-end').value = '';
     element('device-select').selectedIndex = 0;
+
+    element('view-title').innerText = 'Add Event';
+    element('view-description').innerText = 'Add a new event to send a notification';
 
     selectedDevices = [];
     selectedDeviceIndex = [];
@@ -157,10 +187,18 @@ function onAddViewLoaded(){
                 selectedDays.push(day.getAttribute('id'));
             }
 
-            updateCreateButton();
+            updateSubmitEventButton();
 
         });
 
     });
+
+    const button = element('submit-button');
+
+    button.innerText = 'Add'
+    button.onclick = () => submitAddRequest();
+
+    element('delete-button').style.display = 'none';
+
 
 }

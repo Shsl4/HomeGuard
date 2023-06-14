@@ -61,7 +61,7 @@ function generateListElementBody(elem, widths, attrs){
 
         button.textContent = elem.getAttribute('button');
         button.classList.add('button-style')
-        button.setAttribute('onclick',  elem.hasAttribute("onclick") ? elem.getAttribute("onclick") : ``);
+        button.setAttribute('onclick', elem.hasAttribute("clickEvent") ? elem.getAttribute("clickEvent") : ``);
         button.setAttribute('index', elem.getAttribute('button-index'));
 
     }
@@ -78,6 +78,7 @@ class DeviceSelectButton extends HTMLElement {
 
     label = null
     id = null
+    button = null;
 
     constructor() {
         super();
@@ -96,22 +97,9 @@ class DeviceSelectButton extends HTMLElement {
         this.label.textContent = this.getAttribute('name');
         this.label.setAttribute('style', 'color: white');
 
-        let button = div.appendChild(document.createElement('button'));
+        self.button = div.appendChild(document.createElement('button'));
 
         button.setAttribute('class', 'remove-device-button');
-        button.onclick = () => {
-
-            let index = selectedDevices.indexOf(this.id);
-
-            if (index !== -1) {
-                selectedDevices.splice(index, 1);
-            }
-
-            updateCreateButton();
-
-            this.remove();
-
-        };
 
         button.textContent = 'X'
 
@@ -121,6 +109,10 @@ class DeviceSelectButton extends HTMLElement {
 
         this.shadowRoot.append(div, linkElem);
 
+    }
+
+    setClickEvent(event){
+        button.onclick = event;
     }
 
     setNameAndId(name, id){

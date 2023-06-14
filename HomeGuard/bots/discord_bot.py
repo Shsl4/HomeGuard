@@ -38,7 +38,7 @@ class DiscordBot(Bot):
             embed.add_field(name='UUID', value=identity.uuid)
             embed.add_field(name='MAC', value=identity.mac_address)
 
-            embed.add_field(name='IP addresses', value=','.join(identity.ip_addresses), inline=False)
+            embed.add_field(name='IP addresses', value=', '.join(identity.ip_addresses), inline=False)
 
             self.webhook.send(username='HomeGuard', embed=embed)
 

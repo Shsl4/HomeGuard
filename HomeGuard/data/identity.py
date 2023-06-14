@@ -123,6 +123,15 @@ class IdentityManager:
 
             print('')
 
+    def forget(self, device_id: uuid):
+        for identity in self.__identities:
+            if identity.uuid == device_id:
+                self.__identities.remove(identity)
+                self.write_identities()
+                return True
+
+        return False
+
     def identity_by_id(self, id: uuid.UUID):
         for identity in self.__identities:
             if identity.uuid == id:

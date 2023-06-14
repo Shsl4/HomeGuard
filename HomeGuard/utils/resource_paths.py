@@ -29,3 +29,11 @@ class ResourcePaths:
 
         return Path.home().joinpath('Documents/HomeGuard/events.json')
 
+    @staticmethod
+    def tokens_path():
+
+        if sys.platform != "win32" and os.getenv('HOMEGUARD_INSTALLED') is not None:
+            return '/var/lib/HomeGuard/tokens.json'
+
+        return Path.home().joinpath('Documents/HomeGuard/tokens.json')
+

@@ -12,6 +12,7 @@ from scapy.sendrecv import sniff
 from HomeGuard.bots.discord_bot import DiscordBot
 from HomeGuard.data.event import EventManager, Weekdays
 from HomeGuard.data.identity import IdentityManager
+from HomeGuard.data.token_manager import TokenManager
 from HomeGuard.net.adapter import Adapter
 from HomeGuard.net.session import Session
 from HomeGuard.webserver.webserver import WebServer
@@ -29,6 +30,7 @@ class Engine:
         self.__event_manager = EventManager()
         self.__discord_webhook: DiscordBot | None = None
         self.__webserver = WebServer(self)
+        self.__token_manager = TokenManager()
         self.console_thread = None
         self.scheduler_thread = None
         self.webserver_thread = None
@@ -40,6 +42,7 @@ class Engine:
     def run_scheduler(self):
 
         schedule.every().day.at("00:00").do(self.reset_events)
+        schedule.every(3).minutes.do(self.identity_manager().write_identities)
 
         while True:
             schedule.run_pending()
@@ -143,15 +146,39 @@ class Engine:
             print(f'Caught exception in input thread. {e}')
             print('Exiting input thread.')
 
+    def reopen_discord_webhook(self, url):
+        self.__token_manager.discord_webhook_url = url
+        self.__token_manager.write_tokens()
+        return self.setup_discord_webhook()
+
     def setup_discord_webhook(self):
 
-        self.__discord_webhook = DiscordBot(os.getenv('WEBHOOK_URL'))
+        self.__discord_webhook = DiscordBot(self.__token_manager.discord_webhook_url)
 
         try:
             self.__discord_webhook.launch()
             print('Created discord webhook.')
+
         except Exception as e:
             print(e.args[0])
+            return False
+
+        return True
+
+    def discord_webhook_status(self):
+        return self.__discord_webhook.webhook is not None
+
+    def forget_device(self, device_id: uuid.UUID):
+
+        if self.__identity_manager.forget(device_id):
+            for event in self.__event_manager.events():
+                event.remove_identity(device_id)
+            return True
+
+        return False
+
+    def delete_event(self, name):
+        return self.__event_manager.delete(name)
 
     def notify(self, name: str | None, ip: str | None, mac: str):
 
