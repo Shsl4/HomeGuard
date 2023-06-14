@@ -54,9 +54,18 @@ function retrieveEvents(){
 
             }
 
+            let devices = 'None';
+
+            if(names.length === 1){
+                devices = names[0];
+            }
+            else if(names.length > 1){
+                devices = `${names.length} devices`
+            }
+
             eventInfo.setAttribute('class', 'list-div secondary-text');
             eventInfo.setAttribute('name', event.name);
-            eventInfo.setAttribute('devices', names.length > 0 ? names.join(', ') : 'None');
+            eventInfo.setAttribute('devices', devices);
             eventInfo.setAttribute('days', event.trigger.weekdays.join(', '));
             eventInfo.setAttribute('start', event.trigger.start_date);
             eventInfo.setAttribute('end', event.trigger.end_date);
