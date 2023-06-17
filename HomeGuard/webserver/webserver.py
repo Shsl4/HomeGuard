@@ -1,4 +1,5 @@
 import json
+import logging
 import typing as t
 import uuid
 
@@ -29,6 +30,7 @@ class WebServer:
 
     def run(self):
         try:
+            logging.getLogger('waitress').setLevel(logging.ERROR)
             serve(self.__app, host='0.0.0.0', port=8080)
         except BaseException as e:
             print(f'Webserver thread crashed! {e}')

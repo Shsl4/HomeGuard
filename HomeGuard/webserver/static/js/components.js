@@ -42,7 +42,7 @@ function generateListElementBody(elem, widths, attrs){
 
         let div = document.createElement('div');
 
-        div.setAttribute('style', widths[i]);
+        div.setAttribute('style', `${widths[i]}; overflow: clip;`);
         const label1 =  div.appendChild(document.createElement('label'));
 
         label1.textContent = elem.hasAttribute(attrs[i]) ? elem.getAttribute(attrs[i]) : "";

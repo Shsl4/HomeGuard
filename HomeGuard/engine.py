@@ -80,6 +80,7 @@ class Engine:
             self.terminate_fatal(e)
 
     def terminate_fatal(self, e):
+        print(f'Fatal error! Reason: {e}')
         self.__discord_webhook.notify_error('Sniff thread crashed!', e)
         exit(-1)
 

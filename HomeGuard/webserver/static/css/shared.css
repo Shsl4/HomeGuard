@@ -23,13 +23,13 @@ body{
 
 .basic-text{
     font-family: "Lato", sans-serif;
-    font-size: 12pt;
+    font-size: 12px;
     color: var(--text);
 }
 
 .secondary-text {
     font-family: "Lato", sans-serif;
-    font-size: 12pt;
+    font-size: 12px;
     color: var(--light-text);
 
 }
@@ -50,7 +50,7 @@ body{
     justify-content: center;
     width: 100%;
     height: 100%;
-    min-height: 750pt;
+    min-height: 750px;
 
 }
 
@@ -62,7 +62,7 @@ body{
     justify-content: center;
     width: 100%;
     height: 80%;
-    gap: 15pt;
+    gap: 15px;
 
 }
 
@@ -70,7 +70,7 @@ body{
 
     font-family: "Lato", sans-serif;
     color: var(--primary);
-    font-size: 25pt;
+    font-size: 25px;
     font-weight: bold;
 
 }
@@ -82,10 +82,10 @@ body{
     justify-content: center;
     align-items: center;
 
-    width: 775pt;
-    min-height: 550pt;
-    height: 75%;
-    gap: 15pt;
+    width: 775px;
+    min-height: 550px;
+    height: 80%;
+    gap: 15px;
 
 }
 
@@ -96,9 +96,9 @@ body{
     justify-content: center;
     align-items: center;
 
-    min-height: 550pt;
-    height: 75%;
-    gap: 15pt;
+    min-height: 550px;
+    height: 80%;
+    gap: 15px;
 
 }
 
@@ -116,10 +116,8 @@ body{
     align-items: flex-start;
 
     background-color: white;
-    border-radius: 8pt;
-    border: solid var(--border) 2pt;
-
-    box-sizing: content-box;
+    border-radius: 8px;
+    border: solid var(--border) 2px;
 
 }
 
@@ -134,10 +132,10 @@ body{
     align-items: flex-start;
 
     background-color: white;
-    border-radius: 8pt;
-    border: solid var(--border) 2pt;
+    border-radius: 8px;
+    border: solid var(--border) 2px;
 
-    min-width: 350pt;
+    min-width: 350px;
 
 }
 
@@ -146,14 +144,18 @@ body{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 10pt;
-    gap: 20pt;
+    padding: 10px;
+    gap: 20px;
     width: 100%;
     height: 100%;
-    max-height: 500pt;
+    max-height: 500px;
     box-sizing: border-box;
     overflow: scroll;
 
+}
+
+.event-scroller::-webkit-scrollbar{
+    display: none;
 }
 
 .status-data{
@@ -162,10 +164,10 @@ body{
     flex-direction: column;
     justify-content: flex-start;
     box-sizing: border-box;
-    margin-top: 5pt;
-    margin-bottom: 5pt;
-    padding: 10pt;
-    gap: 20pt;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 10px;
+    gap: 20px;
     width: 100%;
 
 }
@@ -175,11 +177,11 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    padding: 10pt;
-    gap: 20pt;
+    padding: 10px;
+    gap: 20px;
     width: 100%;
     height: 100%;
-    max-height: 500pt;
+    max-height: 500px;
     box-sizing: border-box;
     overflow: scroll;
 
@@ -192,7 +194,7 @@ body{
     flex-direction: column;
     object-fit: contain;
 
-    gap: 20pt;
+    gap: 20px;
 
     width: 50%;
     height: 100%;
@@ -201,41 +203,41 @@ body{
 
 .event-section{
 
-    margin: 10pt;
+    margin: 10px;
 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 
-    width: 400pt;
+    width: 400px;
 
-    min-height: 200pt;
-    max-height: 700pt;
+    min-height: 200px;
+    max-height: 700px;
 
     background-color: white;
-    border-radius: 8pt;
-    border: solid var(--border) 2pt;
+    border-radius: 8px;
+    border: solid var(--border) 2px;
 
 }
 
 .device-section {
 
-    margin: 10pt;
+    margin: 10px;
 
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 
-    width: 800pt;
+    width: 800px;
 
-    min-height: 200pt;
-    max-height: 500pt;
+    min-height: 200px;
+    max-height: 500px;
 
     background-color: white;
-    border-radius: 8pt;
-    border: solid var(--border) 2pt;
+    border-radius: 8px;
+    border: solid var(--border) 2px;
 
 }
 
@@ -245,7 +247,7 @@ body{
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    gap: 10pt;
+    gap: 10px;
 
 }
 
@@ -254,10 +256,10 @@ body{
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: solid var(--border) 2pt;
+    border-bottom: solid var(--border) 2px;
     width: 100%;
-    max-height: 50pt;
-    padding: 10pt;
+    max-height: 50px;
+    padding: 10px;
     box-sizing: border-box;
 
 }
@@ -274,12 +276,12 @@ body{
 
 .button-style{
 
-    border-radius: 5pt;
+    border-radius: 5px;
     color: var(--text);
-    padding: 5pt;
-    min-width: 75pt;
-    min-height: 30pt;
-    border: solid var(--border) 2pt;
+    padding: 5px;
+    min-width: 75px;
+    min-height: 30px;
+    border: solid var(--border) 2px;
     background-color: white;
     transition: ease-in-out 0.1s;
 
@@ -312,14 +314,14 @@ body{
     outline: 0;
 
     border: 2pt solid var(--border);
-    border-radius: 5pt;
+    border-radius: 5px;
 
     background-color: var(--background);
 
-    padding: 8pt;
+    padding: 8px;
 
-    min-width: 75pt;
-    min-height: 15pt;
+    min-width: 75px;
+    min-height: 15px;
 
 }
 
@@ -337,7 +339,7 @@ body{
     width: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10pt;
+    gap: 10px;
 
 }
 
@@ -346,7 +348,7 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 5pt;
+    gap: 5px;
 
 }
 
@@ -355,10 +357,10 @@ body{
     display: flex;
     align-items: center;
     flex-wrap: wrap;
-    gap: 2pt;
+    gap: 2px;
     background-color: var(--primary);
-    border-radius: 10pt;
-    padding: 5pt;
+    border-radius: 10px;
+    padding: 5px;
 
 }
 
@@ -367,7 +369,7 @@ body{
     flex-direction: row;
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 5pt;
+    gap: 5px;
 }
 
 .remove-device-button{
@@ -382,7 +384,7 @@ body{
 
 .event-list-category-text {
     font-family: "Lato", sans-serif;
-    font-size: 13pt;
+    font-size: 13px;
     font-weight: bold;
     color: var(--text);
 }
@@ -410,8 +412,8 @@ body{
 
 .day{
 
-    width: 25pt;
-    height: 25pt;
+    width: 25px;
+    height: 25px;
 
     background-color: var(--light-text);
     font-weight: bold;
@@ -420,7 +422,7 @@ body{
 
     border: none;
     border-radius: 50%;
-    padding: 5pt;
+    padding: 5px;
 
     cursor: pointer;
 }
@@ -457,7 +459,7 @@ body{
     align-items: flex-end;
     justify-content: flex-end;
     flex-direction: column;
-    gap: 10pt;
+    gap: 10px;
     position: fixed;
 
     top: 0;
@@ -480,14 +482,14 @@ body{
 
     display: flex;
     flex-direction: column;
-    padding: 10pt;
-    width: 200pt;
+    padding: 10px;
+    width: 200px;
 
-    max-height: 200pt;
+    max-height: 200px;
 
     background-color: white;
     border: solid 2pt var(--border);
-    border-radius: 5pt;
+    border-radius: 5px;
 
         pointer-events:all;
 

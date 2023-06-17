@@ -1,6 +1,5 @@
 import csv
 import os
-from pathlib import Path
 
 from HomeGuard.utils.resource_paths import ResourcePaths
 
@@ -11,10 +10,6 @@ class MacDatabase:
     @staticmethod
     def __database():
         if len(MacDatabase._data) == 0:
-
-            if os.getcwd() == '/':
-                path = '/opt/HomeGuard/Resources'
-
             with(open(ResourcePaths.mac_addresses_path(), encoding="utf8")) as csvfile:
                 reader = csv.reader(csvfile, delimiter=',')
                 for row in reader:

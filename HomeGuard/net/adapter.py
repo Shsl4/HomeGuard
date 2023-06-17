@@ -87,7 +87,7 @@ class Adapter:
         pkt = IP(dst=ip) / UDP(sport=137, dport='netbios_ns') / header / query
 
         # Send package and do not wait for response. The response will be caught by the main sniff loop
-        print(sr1(pkt, timeout=10))
+        sr1(pkt, timeout=0.001)
 
     @staticmethod
     def validate_mac(mac):

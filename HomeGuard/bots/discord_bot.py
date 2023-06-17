@@ -20,6 +20,19 @@ class DiscordBot(Bot):
     def launch(self):
         if self.webhook_url:
             self.webhook = SyncWebhook.from_url(self.webhook_url, session=requests.Session())
+
+            embed = discord.Embed(
+                title='Status notification',
+                colour=discord.Colour.green(),
+                description=f'HomeGuard successfully started!',
+                timestamp=datetime.datetime.now()
+            )
+
+            try:
+                self.webhook.send(username='HomeGuard', embed=embed)
+            except BaseException as e:
+                print(f'Unable to send discord message! {e}')
+
         else:
             raise RuntimeError('No discord webhook url found.')
 

@@ -47,7 +47,7 @@ class DeviceIdentity:
         if name is not None:
             self.recognized_names.add(name)
 
-        if not had_names and len(self.recognized_names) > 0:
+        if not had_names and len(self.recognized_names) > 0 and self.display_name == '':
             self.display_name = list(self.recognized_names)[0]
 
         if self.display_name == '':
@@ -150,6 +150,8 @@ class IdentityManager:
 
         new_identity = DeviceIdentity.make_identity(mac).refresh(None, ip, mac)
         new_identity.try_assign_host_name()
+
+        Adapter.send_netbios_name_request(ip)
 
         self.__identities.append(new_identity)
         self.write_identities()
